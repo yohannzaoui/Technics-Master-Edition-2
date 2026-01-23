@@ -1,2 +1,2 @@
-# Mission-778CDT
-HiRes Audio Player with Mission-778CDT design
+# Technics Hifi HiRes Player 2
+HiRes Audio Player 
