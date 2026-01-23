@@ -13,8 +13,6 @@
             --lcd-bg: #000000;
             --gold: #d4af37;
             --pure-white: #ffffff;
-            --led-red: #ff1100;
-            --led-off: #1a0000;
             --badge-bg: #080808;
             --backlight: rgba(255, 255, 255, 0.7); 
         }
@@ -26,7 +24,6 @@
             color: white; overflow: hidden;
         }
 
-        /* CONTAINER MASTER : 1500px x 720px */
         .hi-fi-container {
             background: var(--chassis-gradient);
             width: 1500px; height: 720px; padding: 30px 90px; 
@@ -35,23 +32,48 @@
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight);
         }
 
-        /* OVERLAYS */
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(8px); }
-        .modal-content { background: #111; border: 1px solid #333; border-radius: 4px; position: relative; width: 600px; }
+        /* MODALS & OVERLAYS */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(8px); }
+        .modal-content { background: #111; border: 1px solid #333; border-radius: 4px; position: relative; width: 600px; z-index: 1001; }
         .modal-close { position: absolute; top: -50px; right: 0; color: #555; font-size: 40px; cursor: pointer; }
         #playlist-items { max-height: 500px; overflow-y: auto; }
         .playlist-item { padding: 15px 25px; border-bottom: 1px solid #222; cursor: pointer; font-size: 12px; font-family: 'Courier New'; text-transform: uppercase; color: #888; }
         .playlist-item:hover { background: #1a1a1a; color: var(--gold); }
         .playlist-item.active { color: var(--gold); font-weight: bold; background: #080808; }
 
-        /* CD TIROIR AGRANDI */
-        .drawer-wrapper { height: 130px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
-        .drawer-slot-area { width: 65%; height: 85px; background-color: #000; border: 2px solid #111; border-radius: 2px; position: relative; overflow: hidden; }
+        /* SECTION CD AVEC POWER À GAUCHE */
+        .drawer-wrapper { 
+            height: 130px; 
+            display: grid; 
+            grid-template-columns: 180px 1fr 180px; 
+            gap: 40px; 
+            align-items: center; 
+            margin-bottom: 15px; 
+        }
+
+        .power-btn-container { display: flex; justify-content: center; align-items: center; }
+        .power-btn { 
+            background: linear-gradient(145deg, #3a3c3f, #1a1c1e); 
+            border: 1px solid #000; 
+            color: #777; 
+            height: 45px; 
+            width: 82px; 
+            cursor: pointer; 
+            border-radius: 2px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: 0.2s; 
+        }
+        .power-btn.on { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
+
+        .drawer-slot-area { width: 100%; height: 85px; background-color: #000; border: 2px solid #111; border-radius: 2px; position: relative; overflow: hidden; }
         .disc-drawer-front { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--chassis-gradient); 
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; justify-content: center; align-items: center;
+            z-index: 5;
         }
         .drawer-slot-area.open .disc-drawer-front { transform: translateY(100%); }
         .mash-logo-drawer { height: 24px; width: auto; opacity: 0.85; filter: brightness(1.2); }
@@ -65,74 +87,44 @@
         @keyframes pulse-yellow { 0%, 100% { color: #777; } 50% { color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.4); } }
         .paused-blink { animation: pulse-yellow 1.5s infinite ease-in-out; }
 
-        /* LCD ECRAN AGRANDI */
+        /* LCD */
         .lcd-screen { background: var(--lcd-bg); border: 1px solid #222; padding: 30px; border-radius: 4px; height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; width: 100%; box-sizing: border-box; }
-        .status-container { position: absolute; top: 30px; opacity: 0; transition: 0.5s; cursor: pointer; }
-        .lcd-label { display: block; font-size: 10px; color: #444; letter-spacing: 2px; font-weight: 900; margin-bottom: 4px; }
-        .lcd-value { font-size: 20px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; }
+        .status-container { position: absolute; top: 30px; opacity: 0; transition: 0.5s; cursor: pointer; z-index: 20; }
+        .lcd-label { display: block; font-size: 10px; color: #444; letter-spacing: 2px; font-weight: 900; margin-bottom: 4px; pointer-events: none; }
+        .lcd-value { font-size: 20px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; pointer-events: none; }
         .brand-logo { height: 45px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
 
-        /* TRAPPE BASSE : Look Chassis + Bordure 3px + Hauteur ajustée */
+        /* TRAPPE BASSE */
         .logo-slot-container { 
-            width: 100%; 
-            height: 140px; 
-            border: 3px solid #000; 
-            border-radius: 4px; 
-            position: relative; 
-            overflow: hidden; 
-            background-color: #030303; 
-            margin-top: 20px; 
-            box-sizing: border-box;
+            width: 100%; height: 140px; border: 3px solid #000; border-radius: 4px; 
+            position: relative; overflow: hidden; background-color: #030303; margin-top: 20px; box-sizing: border-box;
         }
         .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; padding: 0 30px; box-sizing: border-box; flex-wrap: wrap; align-content: center; }
         .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 8px 12px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 70px; text-align: center; text-transform: uppercase; }
         .divider { width: 1px; height: 35px; background: #222; }
 
         .sliding-badge-plate { 
-            width: 100%; 
-            height: 100%; 
-            background: var(--chassis-gradient); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 0 100px; 
-            box-sizing: border-box; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            z-index: 10; 
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+            width: 100%; height: 100%; background: var(--chassis-gradient); display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; 
+            position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
         }
         .logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
-        
-        /* LOGO TECHNICS RÉDUIT À 26PX */
-        .sliding-badge-plate img:first-child {
-            height: 26px;
-            width: auto;
-            filter: grayscale(1) brightness(1.5);
-        }
+        .sliding-badge-plate img:first-child { height: 26px; width: auto; filter: grayscale(1) brightness(1.5); }
         .hr-logo-badge { height: 50px; width: auto; }
-
-        /* POWER SECTION */
-        .power-section { display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
-        .power-btn { background: radial-gradient(circle, #444, #111); border: 2px solid #000; width: 65px; height: 65px; border-radius: 50%; color: #333; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .power-led { width: 10px; height: 10px; background: var(--led-red); border-radius: 50%; margin-top: 10px; box-shadow: 0 0 10px var(--led-red); }
-        .power-led.off { background: var(--led-off); box-shadow: none; }
     </style>
 </head>
 <body>
 
     <div class="hi-fi-container">
-        <div class="overlay" id="artwork-overlay"><div class="modal-content" style="text-align:center; background:none; border:none;"><span class="modal-close" id="close-artwork">&times;</span><img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333; margin-bottom:25px;"></div></div>
-        <div class="overlay" id="playlist-overlay"><div class="modal-content"><div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0; font-size:13px; color:var(--gold); letter-spacing:2px;">TECHNICS PLAYLIST</h3><span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span></div><div id="playlist-items"></div></div></div>
-
         <div class="drawer-wrapper">
+            <div class="power-btn-container">
+                <button class="power-btn on" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
+            </div>
             <div class="drawer-slot-area" id="drawer-area">
                 <div class="disc-drawer-front">
                     <img src="img/mash_logo_t.png" alt="MASH" class="mash-logo-drawer">
                 </div>
             </div>
+            <div></div>
         </div>
 
         <div class="interface-grid">
@@ -146,16 +138,18 @@
 
             <div class="lcd-screen">
                 <div class="status-container" id="time-container" style="left:40px; text-align:left;">
-                    <span class="lcd-label" id="time-label">TIME</span>
+                    <span class="lcd-label">TIME</span>
                     <span class="lcd-value" id="time-display">00:00</span>
                 </div>
                 <div class="status-container" id="playlist-container" style="right:40px; text-align:right;">
                     <span class="lcd-label">TRACK</span>
                     <span class="lcd-value" id="playlist-status">00/00</span>
                 </div>
+                
                 <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
-                <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 12px; width:95%;">
-                    <div id="track-title" class="lcd-value" style="font-size:24px; color:white; cursor:pointer; text-align:center;"></div>
+                
+                <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 12px; width:95%; z-index: 30;">
+                    <div id="track-title" style="font-size:24px; color:white; cursor:pointer; text-align:center; font-family:'Courier New'; font-weight: bold;"></div>
                     <div id="track-meta" style="font-size:13px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-family:'Courier New';"></div>
                 </div>
             </div>
@@ -169,10 +163,7 @@
             </div>
         </div>
 
-        <div class="power-section">
-            <button class="power-btn" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
-            <div class="power-led" id="power-led"></div>
-        </div>
+        <div style="height: 100px;"></div>
 
         <div class="logo-slot-container" id="logo-slot">
             <div class="sub-controls-inner">
@@ -187,6 +178,23 @@
             <div class="sliding-badge-plate">
                 <img src="img/Technics-Logo-org.png" alt="Technics">
                 <img src="img/HR_logo.png" alt="High-Res" class="hr-logo-badge">
+            </div>
+        </div>
+
+        <div class="overlay" id="artwork-overlay">
+            <div class="modal-content" style="text-align:center; background:none; border:none;">
+                <span class="modal-close" id="close-artwork">&times;</span>
+                <img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333; margin-bottom:25px;">
+            </div>
+        </div>
+        
+        <div class="overlay" id="playlist-overlay">
+            <div class="modal-content">
+                <div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="margin:0; font-size:13px; color:var(--gold); letter-spacing:2px;">TECHNICS PLAYLIST</h3>
+                    <span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span>
+                </div>
+                <div id="playlist-items"></div>
             </div>
         </div>
 
@@ -211,6 +219,7 @@
         const playBtn = document.getElementById('play-btn');
         const logoSlot = document.getElementById('logo-slot');
         const menuBtn = document.getElementById('menu-btn');
+        const powerBtn = document.getElementById('power-toggle');
 
         function formatNum(num) { return num.toString().padStart(2, '0'); }
         function formatTime(seconds) {
@@ -251,9 +260,10 @@
             }
         }
 
-        document.getElementById('time-container').onclick = () => { showRemaining = !showRemaining; updateTime(); };
-
-        document.getElementById('playlist-container').onclick = () => {
+        document.getElementById('time-container').onclick = (e) => { e.stopPropagation(); showRemaining = !showRemaining; updateTime(); };
+        
+        document.getElementById('playlist-container').onclick = (e) => {
+            e.stopPropagation();
             if(playlist.length === 0) return;
             const container = document.getElementById('playlist-items');
             container.innerHTML = '';
@@ -290,17 +300,17 @@
         function updateTime() {
             if (!audio.duration) return;
             document.getElementById('time-display').textContent = showRemaining ? "-" + formatTime(audio.duration - audio.currentTime) : formatTime(audio.currentTime);
-            document.getElementById('time-label').textContent = showRemaining ? "REMAIN" : "TIME";
         }
 
         audio.addEventListener('timeupdate', updateTime);
         audio.addEventListener('ended', () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); });
+        
         document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
         document.getElementById('close-artwork').onclick = () => document.getElementById('artwork-overlay').style.display = 'none';
 
-        document.getElementById('power-toggle').onclick = () => {
+        powerBtn.onclick = () => {
             isOn = !isOn;
-            document.getElementById('power-led').classList.toggle('off');
+            powerBtn.classList.toggle('on');
             if (!isOn) { audio.pause(); lcdLogo.style.display = 'block'; infoBlock.style.display = 'none'; document.getElementById('time-container').style.opacity = "0"; document.getElementById('playlist-container').style.opacity = "0"; }
             else if(playlist.length > 0) { updateDisplay(); }
         };
