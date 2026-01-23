@@ -99,7 +99,7 @@
                 <div class="status-container" id="time-container" style="left:40px; text-align:left;"><span class="lcd-label">TIME</span><span class="lcd-value" id="time-display">00:00</span></div>
                 
                 <div id="mute-status-lcd">MUTE</div>
-                <div id="volume-display-lcd">VOL 100%</div>
+                <div id="volume-display-lcd">VOL 5%</div>
 
                 <div class="status-container" id="playlist-container" style="right:40px; text-align:right;"><span class="lcd-label">TRACK</span><span class="lcd-value" id="playlist-status">00/00</span></div>
 
@@ -153,11 +153,13 @@
     <script>
         const jsmediatags = window.jsmediatags;
         const audio = new Audio();
+        audio.volume = 0.05; 
+        
         let playlist = []; let currentIndex = 0; let showRemaining = false; let currentCover = "";
         const numSegments = 60;
         let vuSensitivity = 0.6;
         let vuVisible = true;
-        let volTimer;
+        let volTimer, volRepeatInterval;
 
         let scanInterval, holdTimer, isScanning = false;
         let audioCtx, source, analyserL, analyserR, splitter, isAudioInit = false;
@@ -203,31 +205,43 @@
         }
         drawVU();
 
-        // Volume Management
         function showVolLCD() {
             const display = document.getElementById('volume-display-lcd');
-            const muteDisplay = document.getElementById('mute-status-lcd');
-            if(audio.muted) return; // Priorité au MUTE
-            
+            if(audio.muted) return; 
             display.textContent = `VOL ${Math.round(audio.volume * 100)}%`;
             display.style.display = 'block';
-            
             clearTimeout(volTimer);
-            volTimer = setTimeout(() => {
-                display.style.display = 'none';
-            }, 1000);
+            volTimer = setTimeout(() => { display.style.display = 'none'; }, 1000);
         }
 
-        document.getElementById('vol-inc').onclick = () => { 
-            audio.muted = false; 
-            audio.volume = Math.min(1.0, audio.volume + 0.01); 
+        function changeVolume(delta) {
+            audio.muted = false;
+            audio.volume = Math.max(0, Math.min(1.0, audio.volume + delta));
             updateMuteDisplay();
             showVolLCD();
-        };
-        document.getElementById('vol-dec').onclick = () => { 
-            audio.volume = Math.max(0, audio.volume - 0.01); 
-            showVolLCD();
-        };
+        }
+
+        function setupVolButton(id, delta) {
+            const btn = document.getElementById(id);
+            const startRepeat = () => {
+                changeVolume(delta);
+                volRepeatInterval = setInterval(() => changeVolume(delta), 50);
+            };
+            const stopRepeat = () => { clearInterval(volRepeatInterval); };
+
+            btn.onmousedown = (e) => { if(e.button === 0) startRepeat(); };
+            btn.onmouseup = stopRepeat;
+            btn.onmouseleave = stopRepeat;
+            btn.ontouchstart = (e) => { e.preventDefault(); startRepeat(); };
+            btn.ontouchend = stopRepeat;
+            
+            // Show volume on hover
+            btn.onmouseenter = showVolLCD;
+        }
+
+        setupVolButton('vol-inc', 0.01);
+        setupVolButton('vol-dec', -0.01);
+
         document.getElementById('mute-btn').onclick = () => {
             audio.muted = !audio.muted;
             updateMuteDisplay();
