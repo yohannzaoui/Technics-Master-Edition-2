@@ -155,7 +155,7 @@
                 <button class="mini-btn">TREB -</button><button class="mini-btn">TREB +</button>
                 <div class="divider"></div>
                 <button class="mini-btn" id="vu-dec">VU -</button>
-                <button class="mini-btn" id="vu-mode-btn">VU MODE</button>
+                <button class="mini-btn btn-mini-active" id="vu-mode-btn">VU MODE</button>
                 <button class="mini-btn" id="vu-inc">VU +</button>
                 <div class="divider"></div>
                 <button class="mini-btn">REPEAT</button><button class="mini-btn" id="random-btn">RANDOM</button>
@@ -239,7 +239,6 @@
         }
 
         function showVuLCD() {
-            // Priorité absolue à MUTE : ne rien afficher si muet
             if (document.getElementById('lcd-logo').style.display !== 'none' || audio.muted) return;
             const display = document.getElementById('vu-display-lcd');
             display.textContent = `VU SENS ${vuSensitivity.toFixed(2)}`;
@@ -275,7 +274,6 @@
         setupVolButton('vol-dec', -0.01);
 
         function changeVUSensitivity(delta) {
-            // Empêche la modification/affichage si MUTE
             if(audio.muted) return;
             vuSensitivity = Math.max(0.2, Math.min(3.0, vuSensitivity + delta));
             showVuLCD();
@@ -308,7 +306,6 @@
             const isMuted = audio.muted;
             document.getElementById('mute-btn').classList.toggle('btn-mini-active', isMuted);
             document.getElementById('mute-status-lcd').style.display = isMuted ? 'block' : 'none';
-            // Cache les affichages temporaires si on vient d'activer le mute
             if(isMuted) {
                 document.getElementById('volume-display-lcd').style.display = 'none';
                 document.getElementById('vu-display-lcd').style.display = 'none';
@@ -331,7 +328,13 @@
             if (playlist.length > 0) {
                 document.getElementById('lcd-logo').style.display = 'none'; 
                 document.getElementById('track-info-block').style.display = 'flex'; 
-                if(vuVisible) document.getElementById('vu-area').style.display = 'flex';
+                
+                // Gestion de l'affichage du VU et de l'état du bouton
+                if(vuVisible) {
+                    document.getElementById('vu-area').style.display = 'flex';
+                    document.getElementById('vu-mode-btn').classList.add('btn-mini-active');
+                }
+                
                 document.getElementById('time-container').style.opacity = "1"; 
                 document.getElementById('playlist-container').style.opacity = "1";
                 document.getElementById('playlist-status').textContent = `${(currentIndex + 1).toString().padStart(2,'0')}/${playlist.length.toString().padStart(2,'0')}`;
