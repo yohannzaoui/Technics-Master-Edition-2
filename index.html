@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mission 778CDT - Dynamic Display</title>
+    <title>Mission 778CDT - Dual Time Display</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
@@ -61,7 +61,6 @@
             position: relative;
             overflow: hidden; 
             z-index: 5;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
         .disc-drawer-front {
@@ -92,11 +91,6 @@
             gap: 25px;
         }
 
-        .btn-group-row {
-            display: flex;
-            gap: 12px;
-        }
-
         .btn-square {
             background: linear-gradient(145deg, #3a3c3f, #1a1c1e);
             border: 1px solid #000;
@@ -104,8 +98,6 @@
             height: 34px;
             cursor: pointer;
             border-radius: 2px;
-            font-size: 14px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -116,10 +108,12 @@
         .btn-wide { width: 120px; }
         .btn-small { width: 54px; }
 
+        .btn-group-row { display: flex; gap: 12px; }
+
         .lcd-screen {
             background: var(--lcd-bg);
             border: 1px solid #222;
-            padding: 20px;
+            padding: 25px;
             border-radius: 4px;
             min-height: 240px;
             display: flex;
@@ -131,42 +125,66 @@
             position: relative;
         }
 
+        /* COMPTEUR TRACKS (HAUT DROITE) */
+        .playlist-status-container {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            text-align: right;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* COMPTEUR TEMPS (HAUT GAUCHE) */
+        .time-status-container {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            text-align: left;
+            opacity: 0;
+            cursor: pointer; /* Indique qu'on peut cliquer */
+            transition: opacity 0.5s ease;
+            user-select: none;
+        }
+
+        .lcd-label {
+            display: block;
+            font-size: 10px;
+            color: #444;
+            letter-spacing: 2px;
+            font-weight: 900;
+            margin-bottom: 2px;
+        }
+
+        .lcd-value {
+            font-size: 16px;
+            color: var(--gold);
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
         .brand-logo { 
             height: 50px; 
             width: auto; 
             filter: grayscale(1); 
             opacity: 0.85; 
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            position: absolute; /* Pour ne pas décaler le texte quand il disparaît */
+            transition: opacity 0.4s ease;
         }
 
-        .brand-logo.hidden {
-            opacity: 0;
-            transform: scale(0.95);
-            pointer-events: none;
-        }
+        .brand-logo.hidden { opacity: 0; pointer-events: none; }
 
         .track-info {
             font-size: 18px; 
             color: #444;
-            letter-spacing: 5px; 
+            letter-spacing: 4px; 
             text-transform: uppercase;
             font-family: 'Courier New', Courier, monospace;
-            min-height: 1.2em;
             text-align: center;
-            max-width: 90%;
+            max-width: 85%;
             overflow: hidden;
             white-space: nowrap;
-            transition: opacity 0.5s ease;
-        }
-
-        .playlist-status {
-            font-size: 12px;
-            color: var(--gold);
-            margin-top: 15px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            transition: opacity 0.5s ease;
+            margin-top: 10px;
         }
 
         .power-section {
@@ -230,9 +248,18 @@
 
             <div class="center-panel">
                 <div class="lcd-screen">
+                    <div class="time-status-container" id="time-container">
+                        <span class="lcd-label" id="time-label">TIME</span>
+                        <span class="lcd-value" id="time-display">00:00</span>
+                    </div>
+
+                    <div class="playlist-status-container" id="playlist-container">
+                        <span class="lcd-label">TRACK</span>
+                        <span class="lcd-value" id="playlist-status">00/00</span>
+                    </div>
+
                     <img src="img/mission_logo.png" alt="Mission" class="brand-logo" id="lcd-logo">
                     <div class="track-info" id="track-info"></div>
-                    <div class="playlist-status" id="playlist-status"></div>
                 </div>
             </div>
 
@@ -262,6 +289,10 @@
         const audio = new Audio();
         const trackInfo = document.getElementById('track-info');
         const playlistStatus = document.getElementById('playlist-status');
+        const timeDisplay = document.getElementById('time-display');
+        const timeLabel = document.getElementById('time-label');
+        const playlistContainer = document.getElementById('playlist-container');
+        const timeContainer = document.getElementById('time-container');
         const fileInput = document.getElementById('file-input');
         const powerLed = document.getElementById('power-led');
         const playBtn = document.getElementById('play-btn');
@@ -269,86 +300,93 @@
         const drawerArea = document.getElementById('drawer-area');
         
         let isOn = true;
-        let isDrawerOpen = false;
         let playlist = [];
         let currentIndex = 0;
+        let showRemaining = false;
+
+        function formatNum(num) { return num.toString().padStart(2, '0'); }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${formatNum(mins)}:${formatNum(secs)}`;
+        }
 
         function updateDisplay() {
             if (playlist.length > 0) {
-                // MASQUER LE LOGO SI FICHIERS PRÉSENTS
                 lcdLogo.classList.add('hidden');
+                playlistContainer.style.opacity = "1";
+                timeContainer.style.opacity = "1";
                 
                 const file = playlist[currentIndex];
-                const displayName = file.name.replace(/\.[^/.]+$/, "");
-                trackInfo.textContent = displayName.substring(0, 25).toUpperCase();
-                playlistStatus.textContent = `TRACK ${currentIndex + 1} / ${playlist.length}`;
+                trackInfo.textContent = file.name.replace(/\.[^/.]+$/, "").toUpperCase();
+                playlistStatus.textContent = `${formatNum(currentIndex + 1)}/${formatNum(playlist.length)}`;
                 playBtn.style.color = audio.paused ? "#777" : "var(--gold)";
-                
-                trackInfo.style.opacity = "1";
-                playlistStatus.style.opacity = "1";
             } else {
-                // RÉAFFICHER LE LOGO SI VIDE
                 if(isOn) lcdLogo.classList.remove('hidden');
-                
+                playlistContainer.style.opacity = "0";
+                timeContainer.style.opacity = "0";
                 trackInfo.textContent = "";
-                playlistStatus.textContent = "";
                 playBtn.style.color = "#777";
             }
         }
 
-        function playTrack(index) {
-            if (index >= 0 && index < playlist.length) {
-                currentIndex = index;
-                const url = URL.createObjectURL(playlist[currentIndex]);
-                audio.src = url;
-                audio.play().catch(e => console.log("Playback interaction required"));
-                updateDisplay();
+        function updateTime() {
+            if (!audio.duration) return;
+            if (showRemaining) {
+                const remaining = audio.duration - audio.currentTime;
+                timeDisplay.textContent = "-" + formatTime(remaining);
+                timeLabel.textContent = "REMAIN";
+            } else {
+                timeDisplay.textContent = formatTime(audio.currentTime);
+                timeLabel.textContent = "TIME";
             }
         }
 
-        function resetApplication() {
-            audio.pause();
-            audio.src = "";
-            playlist = [];
-            currentIndex = 0;
-            fileInput.value = "";
-            updateDisplay();
-            drawerArea.classList.remove('open');
-            isDrawerOpen = false;
+        // Switch entre écoulé et restant au clic
+        timeContainer.addEventListener('click', () => {
+            showRemaining = !showRemaining;
+            updateTime();
+        });
+
+        function playTrack(index) {
+            if (index >= 0 && index < playlist.length) {
+                currentIndex = index;
+                audio.src = URL.createObjectURL(playlist[currentIndex]);
+                audio.play();
+                updateDisplay();
+            }
         }
 
         document.getElementById('power-toggle').addEventListener('click', () => {
             isOn = !isOn;
             powerLed.classList.toggle('off');
             if (!isOn) {
-                resetApplication();
-                lcdLogo.classList.add('hidden'); // Tout noir quand éteint
-                trackInfo.style.opacity = "0";
-                playlistStatus.style.opacity = "0";
+                audio.pause();
+                playlist = [];
+                lcdLogo.classList.add('hidden');
+                playlistContainer.style.opacity = "0";
+                timeContainer.style.opacity = "0";
+                trackInfo.textContent = "";
+                drawerArea.classList.remove('open');
             } else {
                 lcdLogo.classList.remove('hidden');
-                trackInfo.style.opacity = "1";
-                playlistStatus.style.opacity = "1";
                 updateDisplay();
             }
         });
 
         document.getElementById('eject-btn').addEventListener('click', () => {
             if(!isOn) return;
-            isDrawerOpen = !isDrawerOpen;
-            if (isDrawerOpen) {
-                drawerArea.classList.add('open');
-                setTimeout(() => { if(isDrawerOpen) fileInput.click(); }, 600);
-            } else {
-                drawerArea.classList.remove('open');
+            drawerArea.classList.toggle('open');
+            if (drawerArea.classList.contains('open')) {
+                setTimeout(() => { if(drawerArea.classList.contains('open')) fileInput.click(); }, 600);
             }
         });
 
         fileInput.addEventListener('change', (e) => {
             const files = Array.from(e.target.files);
-            if (files.length > 0 && isOn) {
+            if (files.length > 0) {
                 drawerArea.classList.remove('open');
-                isDrawerOpen = false;
                 playlist = files;
                 playTrack(0);
             }
@@ -368,10 +406,10 @@
             if (isOn && currentIndex > 0) playTrack(currentIndex - 1);
         });
 
+        audio.addEventListener('timeupdate', updateTime);
         audio.addEventListener('ended', () => {
             if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1);
         });
-
         audio.addEventListener('play', updateDisplay);
         audio.addEventListener('pause', updateDisplay);
     </script>
