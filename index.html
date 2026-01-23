@@ -3,234 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mission 778CDT - Dual Time Display</title>
+    <title>Mission 778CDT - High Glow Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
         :root {
             --bg-color: #050505;
             --chassis-gradient: linear-gradient(to bottom, #2c2e31 0%, #242629 50%, #1c1e21 100%);
             --lcd-bg: #000000;
             --gold: #d4af37;
+            --pure-white: #ffffff;
             --led-red: #ff1100;
             --led-off: #1a0000;
             --badge-bg: #080808;
             --border-black: #000000;
+            /* Lueur arrière augmentée (Opacité 0.7) */
+            --backlight: rgba(255, 255, 255, 0.7); 
         }
 
         body {
             background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            color: white;
-            padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; font-family: 'Segoe UI', Arial, sans-serif;
+            color: white; overflow: hidden;
         }
 
         .hi-fi-container {
             background: var(--chassis-gradient);
-            width: 98%;
-            max-width: 1400px;
-            min-height: 600px;
-            padding: 0 80px 40px;
+            width: 1376px;
+            height: 640px;
+            padding: 20px 70px 30px; 
             border-radius: 4px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1);
-            position: relative;
+            position: relative; 
             border-bottom: 12px solid #111;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column; 
             box-sizing: border-box;
-            overflow: hidden;
+            /* EFFET DE LUEUR PUISSANT */
+            box-shadow: 
+                inset 0 1px 0 rgba(255,255,255,0.1), 
+                0 30px 80px rgba(0,0,0,1),
+                0 -40px 180px var(--backlight), /* Halo principal supérieur */
+                -60px 0 120px rgba(255, 255, 255, 0.2), /* Diffusion gauche */
+                60px 0 120px rgba(255, 255, 255, 0.2);  /* Diffusion droite */
         }
 
-        .drawer-wrapper {
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
+        .drawer-wrapper { height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
         .drawer-slot-area {
-            width: 60%;
-            height: 38px;
-            background-color: var(--border-black); 
-            border: 3px solid var(--border-black);
-            border-radius: 2px;
-            position: relative;
-            overflow: hidden; 
-            z-index: 5;
+            width: 50%; height: 38px; background-color: var(--border-black); 
+            border: 2px solid var(--border-black); border-radius: 2px; position: relative; overflow: hidden;
         }
-
         .disc-drawer-front {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--chassis-gradient);
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--chassis-gradient); transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .drawer-slot-area.open .disc-drawer-front { transform: translateY(100%); }
 
-        .drawer-slot-area.open .disc-drawer-front {
-            transform: translateY(100%);
-        }
-
-        .interface-grid {
-            display: grid;
-            grid-template-columns: 140px 1fr 140px;
-            gap: 40px;
+        .interface-grid { 
+            display: grid; 
+            grid-template-columns: 140px 1fr 140px; 
+            gap: 50px; 
             align-items: center; 
-            z-index: 2;
+            flex-grow: 1; 
         }
 
-        .controls-column {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .btn-square {
-            background: linear-gradient(145deg, #3a3c3f, #1a1c1e);
-            border: 1px solid #000;
-            color: #777;
-            height: 34px;
-            cursor: pointer;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
+        .controls-column { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 25px; 
             justify-content: center;
-            transition: all 0.2s;
+            height: 100%;
         }
-
+        
+        .btn-square {
+            background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000;
+            color: #777; height: 38px; cursor: pointer; border-radius: 2px;
+            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-size: 14px;
+        }
         .btn-square:active { transform: scale(0.95); }
-        .btn-wide { width: 120px; }
-        .btn-small { width: 54px; }
-
+        .btn-wide { width: 100%; }
+        .btn-small { width: calc(50% - 6px); }
         .btn-group-row { display: flex; gap: 12px; }
 
         .lcd-screen {
-            background: var(--lcd-bg);
-            border: 1px solid #222;
-            padding: 25px;
-            border-radius: 4px;
-            min-height: 240px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: inset 0 0 80px rgba(255,255,255,0.02);
-            box-sizing: border-box;
-            position: relative;
+            background: var(--lcd-bg); border: 1px solid #222; padding: 25px; border-radius: 4px;
+            height: 240px; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; box-shadow: inset 0 0 60px rgba(255,255,255,0.02);
+            box-sizing: border-box; position: relative;
         }
 
-        /* COMPTEUR TRACKS (HAUT DROITE) */
-        .playlist-status-container {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            text-align: right;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
+        .status-container { position: absolute; top: 18px; opacity: 0; transition: opacity 0.5s ease; cursor: pointer; }
+        #time-container { left: 25px; text-align: left; }
+        #playlist-container { right: 25px; text-align: right; }
 
-        /* COMPTEUR TEMPS (HAUT GAUCHE) */
-        .time-status-container {
-            position: absolute;
-            top: 20px;
-            left: 25px;
-            text-align: left;
-            opacity: 0;
-            cursor: pointer; /* Indique qu'on peut cliquer */
-            transition: opacity 0.5s ease;
-            user-select: none;
-        }
+        .lcd-label { display: block; font-size: 9px; color: #444; letter-spacing: 2px; font-weight: 900; margin-bottom: 2px; }
+        .lcd-value { font-size: 16px; color: var(--gold); font-family: 'Courier New', Courier, monospace; font-weight: bold; }
 
-        .lcd-label {
-            display: block;
-            font-size: 10px;
-            color: #444;
-            letter-spacing: 2px;
-            font-weight: 900;
-            margin-bottom: 2px;
-        }
-
-        .lcd-value {
-            font-size: 16px;
-            color: var(--gold);
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-
-        .brand-logo { 
-            height: 50px; 
-            width: auto; 
-            filter: grayscale(1); 
-            opacity: 0.85; 
-            transition: opacity 0.4s ease;
-        }
-
+        .brand-logo { height: 45px; width: auto; filter: grayscale(1); opacity: 0.85; transition: opacity 0.4s ease; }
         .brand-logo.hidden { opacity: 0; pointer-events: none; }
 
-        .track-info {
-            font-size: 18px; 
-            color: #444;
-            letter-spacing: 4px; 
-            text-transform: uppercase;
-            font-family: 'Courier New', Courier, monospace;
-            text-align: center;
-            max-width: 85%;
-            overflow: hidden;
-            white-space: nowrap;
-            margin-top: 10px;
+        .track-info-block { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 95%; }
+        .title-row { display: flex; align-items: center; gap: 15px; justify-content: center; width: 100%; }
+        
+        .track-title {
+            font-size: 19px; color: var(--pure-white); letter-spacing: 2px; text-transform: uppercase;
+            font-family: 'Courier New', Courier, monospace; text-align: center;
+            overflow: hidden; white-space: nowrap; max-width: 80%;
         }
 
-        .power-section {
-            display: flex; flex-direction: column; align-items: center;
-            margin-top: 50px; margin-bottom: 30px;
+        .format-badge {
+            font-size: 9px; color: #aaa; border: 1px solid #444; padding: 2px 6px;
+            border-radius: 3px; font-family: sans-serif; font-weight: bold;
         }
 
+        .track-meta {
+            font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 1px; text-transform: uppercase;
+            font-family: 'Courier New', Courier, monospace; text-align: center;
+            white-space: nowrap; width: 100%;
+        }
+
+        .power-section { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
         .power-btn {
-            background: radial-gradient(circle, #444, #111);
-            border: 2px solid #000;
-            width: 70px; height: 70px; border-radius: 50%;
-            color: #333; cursor: pointer; font-size: 24px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+            background: radial-gradient(circle, #444, #111); border: 2px solid #000; width: 60px; height: 60px;
+            border-radius: 50%; color: #333; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;
         }
-
-        .power-led {
-            width: 9px; height: 9px; background: var(--led-red); border-radius: 50%;
-            margin-top: 18px; box-shadow: 0 0 10px var(--led-red);
-            transition: all 0.3s ease;
-        }
-
+        .power-led { width: 8px; height: 8px; background: var(--led-red); border-radius: 50%; margin-top: 10px; box-shadow: 0 0 8px var(--led-red); }
         .power-led.off { background: var(--led-off); box-shadow: none; }
 
         .unified-bottom-badge {
-            background-color: var(--badge-bg);
-            padding: 20px 60px;
-            border-radius: 12px;
-            border: 1px solid #1a1a1a;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.9);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-            width: 100%;
-            box-sizing: border-box;
+            background-color: var(--badge-bg); padding: 15px 60px; border-radius: 8px;
+            border: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center;
         }
+        .model-label-text { font-weight: 300; font-size: 30px; color: #fff; letter-spacing: 4px; }
 
-        .badge-logo { height: 26px; filter: grayscale(1) brightness(1.3); }
-        .model-label-text { font-weight: 300; font-size: 34px; color: #fff; letter-spacing: 4px; }
-
+        .playlist-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 50;
+        }
+        .playlist-modal {
+            background: #111; width: 500px; max-height: 400px; border: 1px solid #333; border-radius: 4px;
+        }
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
     <div class="hi-fi-container">
+        <div class="playlist-overlay" id="playlist-overlay">
+            <div class="playlist-modal">
+                <div style="padding:15px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
+                    <h3 style="margin:0; font-size:12px; color:var(--gold);">DISC CONTENT</h3>
+                    <button id="close-playlist" style="background:none; border:none; color:#555; cursor:pointer; font-size:20px;">&times;</button>
+                </div>
+                <div id="playlist-items" style="overflow-y:auto; max-height:340px;"></div>
+            </div>
+        </div>
+
         <div class="drawer-wrapper">
             <div class="drawer-slot-area" id="drawer-area">
                 <div class="disc-drawer-front"></div>
@@ -246,20 +173,24 @@
                 </div>
             </div>
 
-            <div class="center-panel">
-                <div class="lcd-screen">
-                    <div class="time-status-container" id="time-container">
-                        <span class="lcd-label" id="time-label">TIME</span>
-                        <span class="lcd-value" id="time-display">00:00</span>
+            <div class="lcd-screen">
+                <div class="status-container" id="time-container">
+                    <span class="lcd-label" id="time-label">TIME</span>
+                    <span class="lcd-value" id="time-display">00:00</span>
+                </div>
+                <div class="status-container" id="playlist-container">
+                    <span class="lcd-label">TRACK</span>
+                    <span class="lcd-value" id="playlist-status">00/00</span>
+                </div>
+                
+                <img src="img/mission_logo.png" alt="Mission" class="brand-logo" id="lcd-logo">
+                
+                <div class="track-info-block" id="track-info-block" style="display: none;">
+                    <div class="title-row">
+                        <div class="track-title" id="track-title"></div>
+                        <div class="format-badge" id="format-badge"></div>
                     </div>
-
-                    <div class="playlist-status-container" id="playlist-container">
-                        <span class="lcd-label">TRACK</span>
-                        <span class="lcd-value" id="playlist-status">00/00</span>
-                    </div>
-
-                    <img src="img/mission_logo.png" alt="Mission" class="brand-logo" id="lcd-logo">
-                    <div class="track-info" id="track-info"></div>
+                    <div class="track-meta" id="track-meta"></div>
                 </div>
             </div>
 
@@ -278,26 +209,29 @@
         </div>
 
         <div class="unified-bottom-badge">
-            <img src="img/mission_logo.png" alt="Mission" class="badge-logo">
+            <img src="img/mission_logo.png" alt="Mission" style="height:24px; filter: grayscale(1) brightness(1.5);">
             <span class="model-label-text">778CDT</span>
         </div>
 
-        <input type="file" id="file-input" accept=".flac,.mp3,.mp4,.wav" multiple style="display:none">
+        <input type="file" id="file-input" accept=".flac,.mp3,.wav,.m4a" multiple style="display:none">
     </div>
 
     <script>
+        const jsmediatags = window.jsmediatags;
         const audio = new Audio();
-        const trackInfo = document.getElementById('track-info');
+        const trackTitle = document.getElementById('track-title');
+        const trackMeta = document.getElementById('track-meta');
+        const formatBadge = document.getElementById('format-badge');
+        const infoBlock = document.getElementById('track-info-block');
         const playlistStatus = document.getElementById('playlist-status');
         const timeDisplay = document.getElementById('time-display');
         const timeLabel = document.getElementById('time-label');
-        const playlistContainer = document.getElementById('playlist-container');
-        const timeContainer = document.getElementById('time-container');
-        const fileInput = document.getElementById('file-input');
-        const powerLed = document.getElementById('power-led');
-        const playBtn = document.getElementById('play-btn');
         const lcdLogo = document.getElementById('lcd-logo');
+        const fileInput = document.getElementById('file-input');
         const drawerArea = document.getElementById('drawer-area');
+        const playlistOverlay = document.getElementById('playlist-overlay');
+        const playlistItems = document.getElementById('playlist-items');
+        const playBtn = document.getElementById('play-btn');
         
         let isOn = true;
         let playlist = [];
@@ -305,113 +239,93 @@
         let showRemaining = false;
 
         function formatNum(num) { return num.toString().padStart(2, '0'); }
-
         function formatTime(seconds) {
+            if (isNaN(seconds)) return "00:00";
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${formatNum(mins)}:${formatNum(secs)}`;
         }
 
+        function readMetadata(file) {
+            const ext = file.name.split('.').pop().toUpperCase();
+            formatBadge.textContent = ext;
+            jsmediatags.read(file, {
+                onSuccess: function(tag) {
+                    const t = tag.tags;
+                    trackTitle.textContent = t.title || file.name.replace(/\.[^/.]+$/, "");
+                    trackMeta.textContent = `${t.album || "UNKNOWN ALBUM"} — ${t.artist || "UNKNOWN ARTIST"}`;
+                },
+                onError: function() {
+                    trackTitle.textContent = file.name.replace(/\.[^/.]+$/, "");
+                    trackMeta.textContent = "NO METADATA AVAILABLE";
+                }
+            });
+        }
+
         function updateDisplay() {
             if (playlist.length > 0) {
                 lcdLogo.classList.add('hidden');
-                playlistContainer.style.opacity = "1";
-                timeContainer.style.opacity = "1";
-                
-                const file = playlist[currentIndex];
-                trackInfo.textContent = file.name.replace(/\.[^/.]+$/, "").toUpperCase();
+                infoBlock.style.display = 'flex';
+                document.getElementById('time-container').style.opacity = "1";
+                document.getElementById('playlist-container').style.opacity = "1";
+                readMetadata(playlist[currentIndex]);
                 playlistStatus.textContent = `${formatNum(currentIndex + 1)}/${formatNum(playlist.length)}`;
                 playBtn.style.color = audio.paused ? "#777" : "var(--gold)";
             } else {
                 if(isOn) lcdLogo.classList.remove('hidden');
-                playlistContainer.style.opacity = "0";
-                timeContainer.style.opacity = "0";
-                trackInfo.textContent = "";
-                playBtn.style.color = "#777";
+                infoBlock.style.display = 'none';
+                document.getElementById('time-container').style.opacity = "0";
+                document.getElementById('playlist-container').style.opacity = "0";
             }
+        }
+
+        function playTrack(index) {
+            if (!isOn || index < 0 || index >= playlist.length) return;
+            currentIndex = index;
+            audio.src = URL.createObjectURL(playlist[currentIndex]);
+            audio.play().then(() => updateDisplay()).catch(e => console.error(e));
         }
 
         function updateTime() {
             if (!audio.duration) return;
-            if (showRemaining) {
-                const remaining = audio.duration - audio.currentTime;
-                timeDisplay.textContent = "-" + formatTime(remaining);
-                timeLabel.textContent = "REMAIN";
-            } else {
-                timeDisplay.textContent = formatTime(audio.currentTime);
-                timeLabel.textContent = "TIME";
-            }
+            timeDisplay.textContent = showRemaining ? "-" + formatTime(audio.duration - audio.currentTime) : formatTime(audio.currentTime);
+            timeLabel.textContent = showRemaining ? "REMAIN" : "TIME";
         }
 
-        // Switch entre écoulé et restant au clic
-        timeContainer.addEventListener('click', () => {
-            showRemaining = !showRemaining;
-            updateTime();
-        });
-
-        function playTrack(index) {
-            if (index >= 0 && index < playlist.length) {
-                currentIndex = index;
-                audio.src = URL.createObjectURL(playlist[currentIndex]);
-                audio.play();
-                updateDisplay();
-            }
+        function renderPlaylist() {
+            playlistItems.innerHTML = '';
+            playlist.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.style.padding = "12px";
+                item.style.borderBottom = "1px solid #222";
+                item.style.cursor = "pointer";
+                item.style.color = index === currentIndex ? "var(--gold)" : "#888";
+                item.style.fontSize = "11px";
+                item.textContent = `${index + 1}. ${file.name.toUpperCase()}`;
+                item.onclick = () => { playTrack(index); playlistOverlay.style.display = 'none'; };
+                playlistItems.appendChild(item);
+            });
         }
 
-        document.getElementById('power-toggle').addEventListener('click', () => {
+        document.getElementById('playlist-container').onclick = () => { if(playlist.length > 0) { renderPlaylist(); playlistOverlay.style.display = 'flex'; } };
+        document.getElementById('close-playlist').onclick = () => playlistOverlay.style.display = 'none';
+        document.getElementById('time-container').onclick = () => { showRemaining = !showRemaining; updateTime(); };
+
+        document.getElementById('power-toggle').onclick = () => {
             isOn = !isOn;
-            powerLed.classList.toggle('off');
-            if (!isOn) {
-                audio.pause();
-                playlist = [];
-                lcdLogo.classList.add('hidden');
-                playlistContainer.style.opacity = "0";
-                timeContainer.style.opacity = "0";
-                trackInfo.textContent = "";
-                drawerArea.classList.remove('open');
-            } else {
-                lcdLogo.classList.remove('hidden');
-                updateDisplay();
-            }
-        });
+            document.getElementById('power-led').classList.toggle('off');
+            if (!isOn) { audio.pause(); playlist = []; updateDisplay(); lcdLogo.classList.add('hidden'); drawerArea.classList.remove('open'); }
+            else { lcdLogo.classList.remove('hidden'); updateDisplay(); }
+        };
 
-        document.getElementById('eject-btn').addEventListener('click', () => {
-            if(!isOn) return;
-            drawerArea.classList.toggle('open');
-            if (drawerArea.classList.contains('open')) {
-                setTimeout(() => { if(drawerArea.classList.contains('open')) fileInput.click(); }, 600);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files);
-            if (files.length > 0) {
-                drawerArea.classList.remove('open');
-                playlist = files;
-                playTrack(0);
-            }
-        });
-
-        playBtn.addEventListener('click', () => {
-            if (!isOn || playlist.length === 0) return;
-            audio.paused ? audio.play() : audio.pause();
-            updateDisplay();
-        });
-
-        document.getElementById('next-btn').addEventListener('click', () => {
-            if (isOn && currentIndex < playlist.length - 1) playTrack(currentIndex + 1);
-        });
-
-        document.getElementById('prev-btn').addEventListener('click', () => {
-            if (isOn && currentIndex > 0) playTrack(currentIndex - 1);
-        });
+        document.getElementById('eject-btn').onclick = () => { if(isOn) drawerArea.classList.toggle('open'); if(drawerArea.classList.contains('open')) setTimeout(() => fileInput.click(), 600); };
+        fileInput.onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); drawerArea.classList.remove('open'); playTrack(0); } };
+        playBtn.onclick = () => { if (isOn && playlist.length > 0) { if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
+        document.getElementById('next-btn').onclick = () => { if (isOn && currentIndex < playlist.length - 1) playTrack(currentIndex + 1); };
+        document.getElementById('prev-btn').onclick = () => { if (isOn && currentIndex > 0) playTrack(currentIndex - 1); };
 
         audio.addEventListener('timeupdate', updateTime);
-        audio.addEventListener('ended', () => {
-            if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1);
-        });
-        audio.addEventListener('play', updateDisplay);
-        audio.addEventListener('pause', updateDisplay);
+        audio.addEventListener('ended', () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); });
     </script>
 </body>
 </html>
