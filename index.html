@@ -47,7 +47,7 @@
 
         .interface-grid { display: grid; grid-template-columns: 180px 1fr 180px; gap: 40px; align-items: center; flex-grow: 1; }
         .controls-column { display: flex; flex-direction: column; gap: 30px; }
-        .btn-square { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 45px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; transition: 0.2s; }
+        .btn-square { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 45px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; transition: 0.2s; -webkit-user-select: none; user-select: none; }
         .btn-active { color: var(--gold) !important; text-shadow: 0 0 5px var(--gold); }
 
         @keyframes pulse-yellow { 0%, 100% { color: #777; } 50% { color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.6); } }
@@ -69,7 +69,7 @@
 
         .logo-slot-container { width: 100%; height: 140px; border: 3px solid #000; border-radius: 4px; position: relative; overflow: hidden; background-color: #030303; margin-top: 20px; box-sizing: border-box; }
         .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; padding: 0 15px; box-sizing: border-box; opacity: 0.7; flex-wrap: wrap; align-content: center; }
-        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 10px 14px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 85px; text-align: center; text-transform: uppercase; }
+        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 10px 14px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 85px; text-align: center; text-transform: uppercase; -webkit-user-select: none; user-select: none; }
         .mini-btn:active { color: var(--gold); border-color: var(--gold); }
         .divider { width: 1px; height: 40px; background: #333; }
         .sliding-badge-plate { width: 100%; height: 100%; background: linear-gradient(135deg, rgba(45, 48, 52, 0.6) 0%, rgba(10, 11, 13, 0.85) 100%); backdrop-filter: blur(6px); display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.05); }
@@ -148,7 +148,9 @@
         let playlist = []; let currentIndex = 0; let showRemaining = false; let currentCover = "";
         const numSegments = 60;
         let vuSensitivity = 0.6;
-        let vuVisible = true; // État de visibilité du VU
+        let vuVisible = true;
+
+        let scanInterval, holdTimer, isScanning = false;
 
         let audioCtx, source, analyserL, analyserR, splitter, isAudioInit = false;
 
@@ -192,7 +194,6 @@
         }
         drawVU();
 
-        // Gestionnaire VU MODE
         document.getElementById('vu-mode-btn').onclick = () => {
             vuVisible = !vuVisible;
             document.getElementById('vu-area').style.display = (vuVisible && playlist.length > 0) ? 'flex' : 'none';
@@ -244,9 +245,42 @@
         document.getElementById('play-btn').onclick = () => { if (playlist.length > 0) { initAudio(); if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
         document.getElementById('eject-btn').onclick = () => { document.getElementById('drawer-area').classList.toggle('open'); if(document.getElementById('drawer-area').classList.contains('open')) setTimeout(() => document.getElementById('file-input').click(), 600); };
         document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); document.getElementById('drawer-area').classList.remove('open'); playTrack(0); } };
-        function playTrack(index) { initAudio(); currentIndex = index; audio.src = URL.createObjectURL(playlist[currentIndex]); audio.play().then(() => updateDisplay()); }
-        document.getElementById('next-btn').onclick = () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); };
-        document.getElementById('prev-btn').onclick = () => { if (currentIndex > 0) playTrack(currentIndex - 1); };
+        
+        function playTrack(index) { 
+            initAudio(); 
+            currentIndex = index; 
+            audio.src = URL.createObjectURL(playlist[currentIndex]); 
+            audio.play().then(() => updateDisplay()); 
+        }
+
+        // Logic Auto-Next
+        audio.onended = () => {
+            if (currentIndex < playlist.length - 1) {
+                playTrack(currentIndex + 1);
+            } else {
+                updateDisplay(); // Pour rafraîchir l'icône Play/Pause
+            }
+        };
+
+        function startScan(direction) {
+            isScanning = true;
+            scanInterval = setInterval(() => { audio.currentTime += (direction * 2); }, 100);
+        }
+
+        function stopScan() { clearInterval(scanInterval); isScanning = false; }
+
+        function setupScanButton(id, direction, action) {
+            const btn = document.getElementById(id);
+            btn.onmousedown = () => { if (playlist.length === 0) return; holdTimer = setTimeout(() => startScan(direction), 500); };
+            btn.onmouseup = () => { clearTimeout(holdTimer); if (isScanning) stopScan(); else action(); };
+            btn.onmouseleave = () => { clearTimeout(holdTimer); if (isScanning) stopScan(); };
+            btn.ontouchstart = (e) => { e.preventDefault(); if (playlist.length === 0) return; holdTimer = setTimeout(() => startScan(direction), 500); };
+            btn.ontouchend = () => { clearTimeout(holdTimer); if (isScanning) stopScan(); else action(); };
+        }
+
+        setupScanButton('next-btn', 1, () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); });
+        setupScanButton('prev-btn', -1, () => { if (currentIndex > 0) playTrack(currentIndex - 1); });
+
         document.getElementById('power-toggle').onclick = () => location.reload();
 
         function updateTime() {
