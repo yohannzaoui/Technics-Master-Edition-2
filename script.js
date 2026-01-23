@@ -17,6 +17,25 @@ let volTimer, vuTimer, toneTimer, volRepeatInterval, vuRepeatInterval, toneRepea
 let scanInterval, holdTimer, isScanning = false;
 let audioCtx, source, analyserL, analyserR, splitter, bassFilter, trebFilter, isAudioInit = false;
 
+// Media Session Setup
+function updateMediaMetadata(title, artist, album, artworkUrl) {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: title || 'Unknown Title',
+            artist: artist || 'Unknown Artist',
+            album: album || 'Unknown Album',
+            artwork: artworkUrl ? [{ src: artworkUrl, sizes: '512x512', type: 'image/png' }] : []
+        });
+    }
+}
+
+if ('mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler('play', () => { if (playlist.length > 0) { audio.play(); updateDisplay(); } });
+    navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); updateDisplay(); });
+    navigator.mediaSession.setActionHandler('previoustrack', () => { prevTrack(); });
+    navigator.mediaSession.setActionHandler('nexttrack', () => { nextTrack(); });
+}
+
 function initAudio() {
     if (isAudioInit) return;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -231,12 +250,12 @@ abBtn.onclick = () => {
         abBtn.classList.add('btn-mini-active'); 
         abBtn.textContent = "A-";
         abLcd.style.display = 'block';
-        abLcd.classList.add('ab-blinking'); // Clignote pendant l'attente du point B
+        abLcd.classList.add('ab-blinking');
     } else if (abPointB === null) {
         if (audio.currentTime > abPointA) { 
             abPointB = audio.currentTime; 
             abBtn.textContent = "A-B";
-            abLcd.classList.remove('ab-blinking'); // Fixe une fois la boucle active
+            abLcd.classList.remove('ab-blinking');
         } else { 
             resetAB(); 
         }
@@ -261,19 +280,29 @@ function updateDisplay() {
         document.getElementById('playlist-status').textContent = `${(currentIndex + 1).toString().padStart(2,'0')}/${playlist.length.toString().padStart(2,'0')}`;
         
         const file = playlist[currentIndex];
-        document.getElementById('track-title').textContent = file.name.replace(/\.[^/.]+$/, "");
+        const title = file.name.replace(/\.[^/.]+$/, "");
+        document.getElementById('track-title').textContent = title;
         const formatBadge = document.getElementById('file-format-badge');
         formatBadge.textContent = file.name.split('.').pop().toUpperCase();
         formatBadge.style.display = 'inline-block';
 
         jsmediatags.read(file, {
             onSuccess: (tag) => {
-                const t = tag.tags; document.getElementById('track-meta').textContent = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"}`;
+                const t = tag.tags;
+                const artist = t.artist || "UNKNOWN";
+                const album = t.album || "UNKNOWN";
+                document.getElementById('track-meta').textContent = `${artist} - ${album}`;
+                
                 if (t.picture) {
                     const { data, format } = t.picture; let base = "";
                     for (let i = 0; i < data.length; i++) base += String.fromCharCode(data[i]);
                     currentCover = `data:${format};base64,${window.btoa(base)}`;
                 } else { currentCover = ""; }
+                
+                updateMediaMetadata(title, artist, album, currentCover);
+            },
+            onError: () => {
+                updateMediaMetadata(title, "UNKNOWN", "UNKNOWN", "");
             }
         });
         const playBtn = document.getElementById('play-btn');
@@ -311,6 +340,11 @@ function nextTrack() {
     else { updateDisplay(); }
 }
 
+function prevTrack() {
+    if (currentIndex > 0) playTrack(currentIndex - 1);
+    else if (repeatMode === 2) playTrack(playlist.length - 1);
+}
+
 audio.onended = nextTrack;
 
 function startScan(direction) { isScanning = true; scanInterval = setInterval(() => { audio.currentTime += (direction * 2); }, 100); }
@@ -326,7 +360,7 @@ function setupScanButton(id, direction, action) {
 }
 
 setupScanButton('next-btn', 1, nextTrack);
-setupScanButton('prev-btn', -1, () => { if (currentIndex > 0) playTrack(currentIndex - 1); });
+setupScanButton('prev-btn', -1, prevTrack);
 
 document.getElementById('power-toggle').onclick = () => location.reload();
 
@@ -336,7 +370,6 @@ function updateTime() {
     const sign = (showRemaining && time > 0) ? "-" : "";
     document.getElementById('time-display').textContent = sign + new Date(time * 1000).toISOString().substr(14, 5);
     
-    // Check A-B Loop
     if (abPointA !== null && abPointB !== null) {
         if (audio.currentTime >= abPointB) audio.currentTime = abPointA;
     }
