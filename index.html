@@ -14,18 +14,13 @@
             --gold: #d4af37;
             --pure-white: #ffffff;
             --backlight: rgba(255, 255, 255, 0.7); 
+            --vu-off: #0a0a0a;
         }
 
-        body {
-            background-color: var(--bg-color);
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; margin: 0; font-family: 'Segoe UI', Arial, sans-serif;
-            color: white; overflow: hidden;
-        }
+        body { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Segoe UI', Arial, sans-serif; color: white; overflow: hidden; }
 
         .hi-fi-container {
-            background: var(--chassis-gradient);
-            width: 1500px; height: 720px; padding: 30px 90px; 
+            background: var(--chassis-gradient); width: 1500px; height: 720px; padding: 30px 90px; 
             border-radius: 4px; position: relative; border-bottom: 15px solid #111;
             display: flex; flex-direction: column; box-sizing: border-box;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight);
@@ -40,133 +35,87 @@
         .playlist-item:hover { background: #1a1a1a; color: var(--gold); }
         .playlist-item.active { color: var(--gold); font-weight: bold; background: #080808; }
 
-        /* CD SECTION AVEC POWER À GAUCHE */
-        .drawer-wrapper { 
-            height: 130px; 
-            display: grid; 
-            grid-template-columns: 180px 1fr 180px; 
-            gap: 40px; 
-            align-items: center; 
-            margin-bottom: 15px; 
-        }
-
+        /* CD SECTION */
+        .drawer-wrapper { height: 130px; display: grid; grid-template-columns: 180px 1fr 180px; gap: 40px; align-items: center; margin-bottom: 15px; }
         .power-btn-container { display: flex; justify-content: center; align-items: center; }
-        
-        .power-btn { 
-            background: linear-gradient(145deg, #3a3c3f, #1a1c1e); 
-            border: 1px solid #000; 
-            color: var(--gold); 
-            text-shadow: 0 0 5px var(--gold);
-            height: 45px; 
-            width: 82px; 
-            cursor: pointer; 
-            border-radius: 2px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            transition: 0.2s; 
-        }
+        .power-btn { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: var(--gold); text-shadow: 0 0 5px var(--gold); height: 45px; width: 82px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; }
 
         .drawer-slot-area { width: 100%; height: 85px; background-color: #000; border: 2px solid #111; border-radius: 2px; position: relative; overflow: hidden; }
-        .disc-drawer-front { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--chassis-gradient); 
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; justify-content: center; align-items: center;
-            z-index: 5;
-        }
+        .disc-drawer-front { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--chassis-gradient); transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center; align-items: center; z-index: 5; }
         .drawer-slot-area.open .disc-drawer-front { transform: translateY(100%); }
         .mash-logo-drawer { height: 35px; width: auto; opacity: 0.85; filter: brightness(1.2); }
 
-        /* INTERFACE GRID */
+        /* INTERFACE */
         .interface-grid { display: grid; grid-template-columns: 180px 1fr 180px; gap: 40px; align-items: center; flex-grow: 1; }
         .controls-column { display: flex; flex-direction: column; gap: 30px; }
-        .btn-square { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 45px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 1.1em; }
+        .btn-square { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 45px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; transition: 0.2s; }
         .btn-active { color: var(--gold) !important; text-shadow: 0 0 5px var(--gold); }
 
-        @keyframes pulse-yellow { 0%, 100% { color: #777; } 50% { color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.4); } }
+        /* ANIMATION CLIGNOTEMENT PAUSE */
+        @keyframes pulse-yellow { 0%, 100% { color: #777; } 50% { color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.6); } }
         .paused-blink { animation: pulse-yellow 1.5s infinite ease-in-out; }
 
         /* LCD */
-        .lcd-screen { background: var(--lcd-bg); border: 1px solid #222; padding: 30px; border-radius: 4px; height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; width: 100%; box-sizing: border-box; }
+        .lcd-screen { background: var(--lcd-bg); border: 1px solid #222; border-radius: 4px; height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; width: 100%; box-sizing: border-box; overflow: hidden; }
         .status-container { position: absolute; top: 30px; opacity: 0; transition: 0.5s; cursor: pointer; z-index: 20; }
         .lcd-label { display: block; font-size: 10px; color: #444; letter-spacing: 2px; font-weight: 900; margin-bottom: 4px; pointer-events: none; }
         .lcd-value { font-size: 20px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; pointer-events: none; }
         .brand-logo { height: 45px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
 
-        /* TRAPPE BASSE (VERRE FUMÉ) */
-        .logo-slot-container { 
-            width: 100%; height: 140px; border: 3px solid #000; border-radius: 4px; 
-            position: relative; overflow: hidden; background-color: #030303; margin-top: 20px; box-sizing: border-box;
-        }
-        .sub-controls-inner { 
-            width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; 
-            gap: 15px; padding: 0 30px; box-sizing: border-box; flex-wrap: wrap; align-content: center;
-            opacity: 0.6;
-        }
-        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 8px 12px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 70px; text-align: center; text-transform: uppercase; }
-        .divider { width: 1px; height: 35px; background: #222; }
+        /* VU METER BORD BAS */
+        .vu-meter-area { position: absolute; bottom: 0; left: 0; width: 100%; display: none; flex-direction: column; gap: 4px; padding-bottom: 12px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+        .vu-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0 20px; box-sizing: border-box; }
+        .vu-label { font-family: 'Courier New'; font-weight: 900; font-size: 12px; color: #bbb; width: 12px; }
+        .vu-segments { display: flex; gap: 2px; flex-grow: 1; height: 8px; }
+        .segment { flex-grow: 1; background: var(--vu-off); border-radius: 1px; }
+        .segment.active-white { background: #fff; box-shadow: 0 0 4px rgba(255,255,255,0.4); }
+        .segment.active-red { background: #ff0000; box-shadow: 0 0 8px rgba(255,0,0,0.7); }
 
-        .sliding-badge-plate { 
-            width: 100%; height: 100%; 
-            background: linear-gradient(135deg, rgba(45, 48, 52, 0.6) 0%, rgba(10, 11, 13, 0.85) 100%);
-            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; 
-            position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
-            box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1), inset -1px -1px 0 rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        /* TRAPPE ET BOUTONS CACHÉS */
+        .logo-slot-container { width: 100%; height: 140px; border: 3px solid #000; border-radius: 4px; position: relative; overflow: hidden; background-color: #030303; margin-top: 20px; box-sizing: border-box; }
+        .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 12px; padding: 0 20px; box-sizing: border-box; opacity: 0.7; flex-wrap: wrap; align-content: center; }
+        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 6px 10px; font-size: 10px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 65px; text-align: center; text-transform: uppercase; }
+        .mini-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .divider { width: 1px; height: 30px; background: #333; }
+        .sliding-badge-plate { width: 100%; height: 100%; background: linear-gradient(135deg, rgba(45, 48, 52, 0.6) 0%, rgba(10, 11, 13, 0.85) 100%); backdrop-filter: blur(6px); display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.05); }
         .logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
-        .sliding-badge-plate img:first-child { height: 26px; width: auto; filter: grayscale(1) brightness(1.5); }
-        .hr-logo-badge { height: 50px; width: auto; }
     </style>
 </head>
 <body>
 
     <div class="hi-fi-container">
         <div class="drawer-wrapper">
-            <div class="power-btn-container">
-                <button class="power-btn" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
-            </div>
-            <div class="drawer-slot-area" id="drawer-area">
-                <div class="disc-drawer-front">
-                    <img src="img/mash_logo_t.png" alt="MASH" class="mash-logo-drawer">
-                </div>
-            </div>
+            <div class="power-btn-container"><button class="power-btn" id="power-toggle"><i class="fa-solid fa-power-off"></i></button></div>
+            <div class="drawer-slot-area" id="drawer-area"><div class="disc-drawer-front"><img src="img/mash_logo_t.png" alt="MASH" class="mash-logo-drawer"></div></div>
             <div></div>
         </div>
 
         <div class="interface-grid">
             <div class="controls-column">
                 <button class="btn-square" id="eject-btn" style="width:100%"><i class="fa-solid fa-eject"></i></button>
-                <div style="display:flex; gap:15px;">
-                    <button class="btn-square" id="menu-btn" style="width:50%"><i class="fa-solid fa-bars"></i></button>
-                    <button class="btn-square" style="width:50%"><i class="fa-solid fa-layer-group"></i></button>
-                </div>
+                <div style="display:flex; gap:15px;"><button class="btn-square" id="menu-btn" style="width:50%"><i class="fa-solid fa-bars"></i></button><button class="btn-square" style="width:50%"><i class="fa-solid fa-layer-group"></i></button></div>
             </div>
 
-            <div class="lcd-screen">
-                <div class="status-container" id="time-container" style="left:40px; text-align:left;">
-                    <span class="lcd-label">TIME</span>
-                    <span class="lcd-value" id="time-display">00:00</span>
-                </div>
-                <div class="status-container" id="playlist-container" style="right:40px; text-align:right;">
-                    <span class="lcd-label">TRACK</span>
-                    <span class="lcd-value" id="playlist-status">00/00</span>
-                </div>
+            <div class="lcd-screen" id="main-lcd">
+                <div class="status-container" id="time-container" style="left:40px; text-align:left;"><span class="lcd-label">TIME</span><span class="lcd-value" id="time-display">00:00</span></div>
+                <div class="status-container" id="playlist-container" style="right:40px; text-align:right;"><span class="lcd-label">TRACK</span><span class="lcd-value" id="playlist-status">00/00</span></div>
+
                 <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
+
                 <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 12px; width:95%; z-index: 30;">
-                    <div id="track-title" style="font-size:24px; color:white; cursor:pointer; text-align:center; font-family:'Courier New'; font-weight: bold;"></div>
+                    <div id="track-title" style="font-size:24px; color:white; cursor:pointer; text-align:center; font-family:'Courier New'; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>
                     <div id="track-meta" style="font-size:13px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-family:'Courier New';"></div>
+                </div>
+
+                <div class="vu-meter-area" id="vu-area">
+                    <div class="vu-row"><span class="vu-label">L</span><div class="vu-segments" id="vu-left"></div></div>
+                    <div class="vu-row"><span class="vu-label">R</span><div class="vu-segments" id="vu-right"></div></div>
                 </div>
             </div>
 
             <div class="controls-column">
                 <button class="btn-square" id="play-btn" style="width:100%"><i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i></button>
-                <div style="display:flex; gap:15px;">
-                    <button class="btn-square" id="prev-btn" style="width:50%"><i class="fa-solid fa-backward-step"></i></button>
-                    <button class="btn-square" id="next-btn" style="width:50%"><i class="fa-solid fa-forward-step"></i></button>
-                </div>
+                <div style="display:flex; gap:15px;"><button class="btn-square" id="prev-btn" style="width:50%"><i class="fa-solid fa-backward-step"></i></button><button class="btn-square" id="next-btn" style="width:50%"><i class="fa-solid fa-forward-step"></i></button></div>
             </div>
         </div>
 
@@ -174,33 +123,45 @@
 
         <div class="logo-slot-container" id="logo-slot">
             <div class="sub-controls-inner">
-                <button class="mini-btn">VOL-</button><button class="mini-btn">VOL+</button><button class="mini-btn">MUTE</button>
+                <button class="mini-btn">VOL -</button><button class="mini-btn">VOL +</button><button class="mini-btn">MUTE</button>
                 <div class="divider"></div>
-                <button class="mini-btn">BASS-</button><button class="mini-btn">BASS+</button>
+                <button class="mini-btn">BASS -</button><button class="mini-btn">BASS +</button>
                 <div class="divider"></div>
-                <button class="mini-btn">TREB-</button><button class="mini-btn">TREB+</button>
+                <button class="mini-btn">TREB -</button><button class="mini-btn">TREB +</button>
                 <div class="divider"></div>
-                <button class="mini-btn">VU</button><button class="mini-btn">RANDOM</button><button class="mini-btn">REPEAT</button><button class="mini-btn">A-B</button>
+                <button class="mini-btn">REPEAT</button><button class="mini-btn">RANDOM</button><button class="mini-btn">A-B</button>
+                <button class="mini-btn">VU MODE</button>
             </div>
             <div class="sliding-badge-plate">
-                <img src="img/Technics-Logo-org.png" alt="Technics">
-                <img src="img/HR_logo.png" alt="High-Res" class="hr-logo-badge">
+                <img src="img/Technics-Logo-org.png" alt="Technics" height="26">
+                <img src="img/HR_logo.png" alt="High-Res" height="50">
             </div>
         </div>
 
-        <div class="overlay" id="artwork-overlay"><div class="modal-content" style="text-align:center; background:none; border:none;"><span class="modal-close" id="close-artwork">&times;</span><img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333; margin-bottom:25px;"></div></div>
-        <div class="overlay" id="playlist-overlay"><div class="modal-content"><div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0; font-size:13px; color:var(--gold); letter-spacing:2px;">TECHNICS PLAYLIST</h3><span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span></div><div id="playlist-items"></div></div></div>
-
+        <div class="overlay" id="artwork-overlay"><div class="modal-content" style="text-align:center; background:none; border:none;"><span class="modal-close" id="close-artwork">&times;</span><img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333;"></div></div>
+        <div class="overlay" id="playlist-overlay"><div class="modal-content"><div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0; font-size:13px; color:var(--gold); letter-spacing:2px;">PLAYLIST</h3><span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span></div><div id="playlist-items"></div></div></div>
+        
         <input type="file" id="file-input" multiple style="display:none" accept=".mp3,.flac,.wav,.m4a">
     </div>
 
     <script>
         const jsmediatags = window.jsmediatags;
         const audio = new Audio();
-        let playlist = [];
-        let currentIndex = 0;
-        let showRemaining = false;
-        let currentCover = "";
+        let playlist = []; let currentIndex = 0; let showRemaining = false; let currentCover = "";
+        const numSegments = 60;
+
+        let audioCtx, source, analyserL, analyserR, splitter, isAudioInit = false;
+
+        function initAudio() {
+            if (isAudioInit) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            source = audioCtx.createMediaElementSource(audio);
+            splitter = audioCtx.createChannelSplitter(2);
+            analyserL = audioCtx.createAnalyser(); analyserR = audioCtx.createAnalyser();
+            analyserL.fftSize = 256; analyserR.fftSize = 256;
+            source.connect(splitter); splitter.connect(analyserL, 0); splitter.connect(analyserR, 1);
+            source.connect(audioCtx.destination); isAudioInit = true;
+        }
 
         const trackTitle = document.getElementById('track-title');
         const trackMeta = document.getElementById('track-meta');
@@ -209,100 +170,91 @@
         const fileInput = document.getElementById('file-input');
         const drawerArea = document.getElementById('drawer-area');
         const playBtn = document.getElementById('play-btn');
-        const logoSlot = document.getElementById('logo-slot');
-        const menuBtn = document.getElementById('menu-btn');
-        const powerBtn = document.getElementById('power-toggle');
+        const vuArea = document.getElementById('vu-area');
+        const vuLeft = document.getElementById('vu-left');
+        const vuRight = document.getElementById('vu-right');
 
-        function formatNum(num) { return num.toString().padStart(2, '0'); }
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return "00:00";
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${formatNum(mins)}:${formatNum(secs)}`;
+        function createSegments(container) { for (let i = 0; i < numSegments; i++) { const seg = document.createElement('div'); seg.className = 'segment'; container.appendChild(seg); } }
+        createSegments(vuLeft); createSegments(vuRight);
+
+        function drawVU() {
+            requestAnimationFrame(drawVU);
+            if (!isAudioInit || audio.paused) { document.querySelectorAll('.segment').forEach(s => s.className = 'segment'); return; }
+            const dataL = new Uint8Array(analyserL.frequencyBinCount); const dataR = new Uint8Array(analyserR.frequencyBinCount);
+            analyserL.getByteFrequencyData(dataL); analyserR.getByteFrequencyData(dataR);
+            const getLevel = (data) => { let sum = 0; for(let i=0; i<data.length; i++) sum += data[i]; return sum / data.length; };
+            const updateBar = (container, avg) => {
+                const level = Math.min(numSegments, Math.floor((avg / 110) * numSegments));
+                const segments = container.children;
+                for (let i = 0; i < numSegments; i++) {
+                    segments[i].className = 'segment';
+                    if (i < level) {
+                        if (i > numSegments - 10) segments[i].classList.add('active-red');
+                        else segments[i].classList.add('active-white');
+                    }
+                }
+            };
+            updateBar(vuLeft, getLevel(dataL)); updateBar(vuRight, getLevel(dataR));
         }
-
-        menuBtn.onclick = () => { logoSlot.classList.toggle('open'); menuBtn.classList.toggle('btn-active'); };
+        drawVU();
 
         function updateDisplay() {
             if (playlist.length > 0) {
-                lcdLogo.style.display = 'none';
-                infoBlock.style.display = 'flex';
-                document.getElementById('time-container').style.opacity = "1";
-                document.getElementById('playlist-container').style.opacity = "1";
-                document.getElementById('playlist-status').textContent = `${formatNum(currentIndex + 1)}/${formatNum(playlist.length)}`;
-                
+                lcdLogo.style.display = 'none'; infoBlock.style.display = 'flex'; vuArea.style.display = 'flex';
+                document.getElementById('time-container').style.opacity = "1"; document.getElementById('playlist-container').style.opacity = "1";
+                document.getElementById('playlist-status').textContent = `${(currentIndex + 1).toString().padStart(2,'0')}/${playlist.length.toString().padStart(2,'0')}`;
                 const file = playlist[currentIndex];
                 trackTitle.textContent = file.name.replace(/\.[^/.]+$/, "");
-                
                 jsmediatags.read(file, {
                     onSuccess: (tag) => {
-                        const t = tag.tags;
-                        trackMeta.textContent = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"}`;
+                        const t = tag.tags; trackMeta.textContent = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"}`;
                         if (t.picture) {
-                            const { data, format } = t.picture;
-                            let base = "";
+                            const { data, format } = t.picture; let base = "";
                             for (let i = 0; i < data.length; i++) base += String.fromCharCode(data[i]);
                             currentCover = `data:${format};base64,${window.btoa(base)}`;
-                        } else { currentCover = "https://via.placeholder.com/400/111/d4af37?text=NO+COVER"; }
+                        } else { currentCover = ""; }
                     }
                 });
-
-                if (audio.paused) playBtn.classList.add('paused-blink'); else playBtn.classList.remove('paused-blink');
+                // Gestion du clignotement
+                if (audio.paused) playBtn.classList.add('paused-blink');
+                else playBtn.classList.remove('paused-blink');
                 playBtn.style.color = audio.paused ? "#777" : "var(--gold)";
             }
         }
 
-        document.getElementById('time-container').onclick = (e) => { e.stopPropagation(); showRemaining = !showRemaining; updateTime(); };
-        document.getElementById('playlist-container').onclick = (e) => {
-            e.stopPropagation();
-            if(playlist.length === 0) return;
-            const container = document.getElementById('playlist-items');
-            container.innerHTML = '';
+        document.getElementById('time-container').onclick = () => { showRemaining = !showRemaining; updateTime(); };
+
+        trackTitle.onclick = () => { if(currentCover) { document.getElementById('album-cover').src = currentCover; document.getElementById('artwork-overlay').style.display = 'flex'; } };
+        document.getElementById('playlist-container').onclick = () => {
+            const container = document.getElementById('playlist-items'); container.innerHTML = '';
             playlist.forEach((f, i) => {
-                const item = document.createElement('div');
-                item.className = `playlist-item ${i === currentIndex ? 'active' : ''}`;
-                item.textContent = `${formatNum(i+1)}. ${f.name.replace(/\.[^/.]+$/, "")}`;
+                const item = document.createElement('div'); item.className = `playlist-item ${i === currentIndex ? 'active' : ''}`;
+                item.textContent = `${(i+1).toString().padStart(2,'0')}. ${f.name.replace(/\.[^/.]+$/, "")}`;
                 item.onclick = () => { playTrack(i); document.getElementById('playlist-overlay').style.display = 'none'; };
                 container.appendChild(item);
             });
             document.getElementById('playlist-overlay').style.display = 'flex';
         };
 
-        trackTitle.onclick = () => {
-            if(currentCover) {
-                document.getElementById('album-cover').src = currentCover;
-                document.getElementById('artwork-overlay').style.display = 'flex';
-            }
-        };
-
-        function playTrack(index) {
-            if (index < 0 || index >= playlist.length) return;
-            currentIndex = index;
-            audio.src = URL.createObjectURL(playlist[currentIndex]);
-            audio.play().then(() => updateDisplay());
-        }
-
+        playBtn.onclick = () => { if (playlist.length > 0) { initAudio(); if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
         document.getElementById('eject-btn').onclick = () => { drawerArea.classList.toggle('open'); if(drawerArea.classList.contains('open')) setTimeout(() => fileInput.click(), 600); };
         fileInput.onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); drawerArea.classList.remove('open'); playTrack(0); } };
-        playBtn.onclick = () => { if (playlist.length > 0) { if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
+        function playTrack(index) { initAudio(); currentIndex = index; audio.src = URL.createObjectURL(playlist[currentIndex]); audio.play().then(() => updateDisplay()); }
         document.getElementById('next-btn').onclick = () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); };
         document.getElementById('prev-btn').onclick = () => { if (currentIndex > 0) playTrack(currentIndex - 1); };
-        
+        document.getElementById('power-toggle').onclick = () => location.reload();
+
         function updateTime() {
-            if (!audio.duration) return;
-            document.getElementById('time-display').textContent = showRemaining ? "-" + formatTime(audio.duration - audio.currentTime) : formatTime(audio.currentTime);
+            const time = showRemaining ? (audio.duration - audio.currentTime) : audio.currentTime;
+            if (isNaN(time)) return;
+            const sign = (showRemaining && time > 0) ? "-" : "";
+            document.getElementById('time-display').textContent = sign + new Date(time * 1000).toISOString().substr(14, 5);
         }
 
         audio.addEventListener('timeupdate', updateTime);
-        audio.addEventListener('ended', () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); });
-        
-        document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
         document.getElementById('close-artwork').onclick = () => document.getElementById('artwork-overlay').style.display = 'none';
-
-        // ACTION : Rafraîchir la page lors de l'appui sur Power
-        powerBtn.onclick = () => {
-            location.reload();
-        };
+        document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
+        document.getElementById('menu-btn').onclick = () => { document.getElementById('logo-slot').classList.toggle('open'); document.getElementById('menu-btn').classList.toggle('btn-active'); };
     </script>
 </body>
 </html>
