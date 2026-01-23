@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mission 778CDT - Wide Chassis</title>
+    <title>Mission 778CDT - Dynamic Display</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
@@ -31,10 +31,10 @@
 
         .hi-fi-container {
             background: var(--chassis-gradient);
-            width: 98%; /* Augmenté */
-            max-width: 1400px; /* Élargissement significatif du châssis */
+            width: 98%;
+            max-width: 1400px;
             min-height: 600px;
-            padding: 0 80px 40px; /* Padding latéral augmenté pour l'équilibre */
+            padding: 0 80px 40px;
             border-radius: 4px;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1);
             position: relative;
@@ -53,7 +53,7 @@
         }
 
         .drawer-slot-area {
-            width: 60%; /* Proportion ajustée à la nouvelle largeur */
+            width: 60%;
             height: 38px;
             background-color: var(--border-black); 
             border: 3px solid var(--border-black);
@@ -80,8 +80,8 @@
 
         .interface-grid {
             display: grid;
-            grid-template-columns: 140px 1fr 140px; /* Colonnes latérales légèrement plus larges */
-            gap: 40px; /* Espace augmenté entre les colonnes */
+            grid-template-columns: 140px 1fr 140px;
+            gap: 40px;
             align-items: center; 
             z-index: 2;
         }
@@ -121,25 +121,52 @@
             border: 1px solid #222;
             padding: 20px;
             border-radius: 4px;
-            min-height: 240px; /* Écran légèrement plus haut pour suivre l'échelle */
+            min-height: 240px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             box-shadow: inset 0 0 80px rgba(255,255,255,0.02);
             box-sizing: border-box;
+            position: relative;
         }
 
         .brand-logo { 
-            height: 50px; width: auto; filter: grayscale(1); 
-            opacity: 0.85; transition: opacity 0.5s ease; 
+            height: 50px; 
+            width: auto; 
+            filter: grayscale(1); 
+            opacity: 0.85; 
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            position: absolute; /* Pour ne pas décaler le texte quand il disparaît */
+        }
+
+        .brand-logo.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
         }
 
         .track-info {
-            font-size: 20px; margin-top: 25px; color: #444;
-            letter-spacing: 12px; text-transform: uppercase;
+            font-size: 18px; 
+            color: #444;
+            letter-spacing: 5px; 
+            text-transform: uppercase;
             font-family: 'Courier New', Courier, monospace;
             min-height: 1.2em;
+            text-align: center;
+            max-width: 90%;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: opacity 0.5s ease;
+        }
+
+        .playlist-status {
+            font-size: 12px;
+            color: var(--gold);
+            margin-top: 15px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            transition: opacity 0.5s ease;
         }
 
         .power-section {
@@ -174,7 +201,7 @@
             justify-content: space-between;
             align-items: center;
             margin-top: auto;
-            width: 100%; /* S'adapte à la nouvelle largeur */
+            width: 100%;
             box-sizing: border-box;
         }
 
@@ -205,6 +232,7 @@
                 <div class="lcd-screen">
                     <img src="img/mission_logo.png" alt="Mission" class="brand-logo" id="lcd-logo">
                     <div class="track-info" id="track-info"></div>
+                    <div class="playlist-status" id="playlist-status"></div>
                 </div>
             </div>
 
@@ -227,12 +255,13 @@
             <span class="model-label-text">778CDT</span>
         </div>
 
-        <input type="file" id="file-input" accept=".flac" style="display:none">
+        <input type="file" id="file-input" accept=".flac,.mp3,.mp4,.wav" multiple style="display:none">
     </div>
 
     <script>
         const audio = new Audio();
         const trackInfo = document.getElementById('track-info');
+        const playlistStatus = document.getElementById('playlist-status');
         const fileInput = document.getElementById('file-input');
         const powerLed = document.getElementById('power-led');
         const playBtn = document.getElementById('play-btn');
@@ -241,13 +270,49 @@
         
         let isOn = true;
         let isDrawerOpen = false;
+        let playlist = [];
+        let currentIndex = 0;
+
+        function updateDisplay() {
+            if (playlist.length > 0) {
+                // MASQUER LE LOGO SI FICHIERS PRÉSENTS
+                lcdLogo.classList.add('hidden');
+                
+                const file = playlist[currentIndex];
+                const displayName = file.name.replace(/\.[^/.]+$/, "");
+                trackInfo.textContent = displayName.substring(0, 25).toUpperCase();
+                playlistStatus.textContent = `TRACK ${currentIndex + 1} / ${playlist.length}`;
+                playBtn.style.color = audio.paused ? "#777" : "var(--gold)";
+                
+                trackInfo.style.opacity = "1";
+                playlistStatus.style.opacity = "1";
+            } else {
+                // RÉAFFICHER LE LOGO SI VIDE
+                if(isOn) lcdLogo.classList.remove('hidden');
+                
+                trackInfo.textContent = "";
+                playlistStatus.textContent = "";
+                playBtn.style.color = "#777";
+            }
+        }
+
+        function playTrack(index) {
+            if (index >= 0 && index < playlist.length) {
+                currentIndex = index;
+                const url = URL.createObjectURL(playlist[currentIndex]);
+                audio.src = url;
+                audio.play().catch(e => console.log("Playback interaction required"));
+                updateDisplay();
+            }
+        }
 
         function resetApplication() {
             audio.pause();
             audio.src = "";
+            playlist = [];
+            currentIndex = 0;
             fileInput.value = "";
-            trackInfo.textContent = "";
-            playBtn.style.color = "#777";
+            updateDisplay();
             drawerArea.classList.remove('open');
             isDrawerOpen = false;
         }
@@ -257,11 +322,14 @@
             powerLed.classList.toggle('off');
             if (!isOn) {
                 resetApplication();
-                lcdLogo.style.opacity = "0.02"; 
+                lcdLogo.classList.add('hidden'); // Tout noir quand éteint
                 trackInfo.style.opacity = "0";
+                playlistStatus.style.opacity = "0";
             } else {
-                lcdLogo.style.opacity = "0.85";
+                lcdLogo.classList.remove('hidden');
                 trackInfo.style.opacity = "1";
+                playlistStatus.style.opacity = "1";
+                updateDisplay();
             }
         });
 
@@ -277,28 +345,35 @@
         });
 
         fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && isOn) {
+            const files = Array.from(e.target.files);
+            if (files.length > 0 && isOn) {
                 drawerArea.classList.remove('open');
                 isDrawerOpen = false;
-                const url = URL.createObjectURL(file);
-                audio.src = url;
-                trackInfo.textContent = file.name.substring(0, 15).toUpperCase();
-                audio.play();
-                playBtn.style.color = "var(--gold)";
+                playlist = files;
+                playTrack(0);
             }
         });
 
         playBtn.addEventListener('click', () => {
-            if (!isOn || !audio.src) return;
-            if (audio.paused) {
-                audio.play();
-                playBtn.style.color = "var(--gold)";
-            } else {
-                audio.pause();
-                playBtn.style.color = "#777";
-            }
+            if (!isOn || playlist.length === 0) return;
+            audio.paused ? audio.play() : audio.pause();
+            updateDisplay();
         });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (isOn && currentIndex < playlist.length - 1) playTrack(currentIndex + 1);
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (isOn && currentIndex > 0) playTrack(currentIndex - 1);
+        });
+
+        audio.addEventListener('ended', () => {
+            if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1);
+        });
+
+        audio.addEventListener('play', updateDisplay);
+        audio.addEventListener('pause', updateDisplay);
     </script>
 </body>
 </html>
