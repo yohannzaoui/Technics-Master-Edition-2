@@ -14,6 +14,7 @@
             --lcd-bg: #000000;
             --gold: #d4af37;
             --pure-white: #ffffff;
+            --active-glow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 4px rgba(255, 255, 255, 0.5);
             --backlight: rgba(255, 255, 255, 0.7); 
             --vu-off: #0a0a0a;
             --font-modern: 'Funnel Sans', sans-serif;
@@ -34,11 +35,14 @@
         #playlist-items { max-height: 500px; overflow-y: auto; }
         .playlist-item { padding: 15px 25px; border-bottom: 1px solid #222; cursor: pointer; font-size: 13px; font-family: var(--font-modern); text-transform: uppercase; color: #888; }
         .playlist-item:hover { background: #1a1a1a; color: var(--gold); }
-        .playlist-item.active { color: var(--gold); font-weight: bold; background: #080808; }
+        .playlist-item.active { color: var(--pure-white); font-weight: bold; background: #080808; text-shadow: var(--active-glow); }
 
         .drawer-wrapper { height: 130px; display: grid; grid-template-columns: 180px 1fr 180px; gap: 40px; align-items: center; margin-bottom: 15px; }
         .power-btn-container { display: flex; justify-content: center; align-items: center; }
-        .power-btn { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: var(--gold); text-shadow: 0 0 5px var(--gold); height: 45px; width: 82px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; }
+        .power-btn { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 45px; width: 82px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        
+        /* Always on styling via class */
+        .power-btn.btn-active { color: var(--pure-white); text-shadow: var(--active-glow); border-color: #444; }
 
         .drawer-slot-area { width: 100%; height: 85px; background-color: #000; border: 2px solid #111; border-radius: 2px; position: relative; overflow: hidden; }
         .disc-drawer-front { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--chassis-gradient); transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center; align-items: center; z-index: 5; }
@@ -48,10 +52,11 @@
         .interface-grid { display: grid; grid-template-columns: 180px 1fr 180px; gap: 40px; align-items: center; flex-grow: 1; }
         .controls-column { display: flex; flex-direction: column; gap: 30px; }
         .btn-square { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 45px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; transition: 0.2s; -webkit-user-select: none; user-select: none; }
-        .btn-active { color: var(--gold) !important; text-shadow: 0 0 5px var(--gold); }
+        
+        .btn-active, .btn-square:active { color: var(--pure-white) !important; text-shadow: var(--active-glow); }
 
-        @keyframes pulse-yellow { 0%, 100% { color: #777; } 50% { color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.6); } }
-        .paused-blink { animation: pulse-yellow 1.5s infinite ease-in-out; }
+        @keyframes pulse-white { 0%, 100% { color: #777; } 50% { color: #fff; text-shadow: var(--active-glow); } }
+        .paused-blink { animation: pulse-white 1.5s infinite ease-in-out; }
 
         .lcd-screen { background: var(--lcd-bg); border: 1px solid #222; border-radius: 4px; height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; width: 100%; box-sizing: border-box; overflow: hidden; }
         .status-container { position: absolute; top: 30px; opacity: 0; transition: 0.5s; cursor: pointer; z-index: 20; }
@@ -72,9 +77,10 @@
 
         .logo-slot-container { width: 100%; height: 140px; border: 3px solid #000; border-radius: 4px; position: relative; overflow: hidden; background-color: #030303; margin-top: 20px; box-sizing: border-box; }
         .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; padding: 0 15px; box-sizing: border-box; opacity: 0.7; flex-wrap: wrap; align-content: center; }
-        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 10px 14px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 85px; text-align: center; text-transform: uppercase; -webkit-user-select: none; user-select: none; }
-        .mini-btn:active { color: var(--gold); border-color: var(--gold); }
-        .btn-mini-active { color: var(--gold) !important; border-color: var(--gold) !important; text-shadow: 0 0 5px var(--gold); }
+        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: #888; padding: 10px 14px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 85px; text-align: center; text-transform: uppercase; -webkit-user-select: none; user-select: none; transition: 0.2s; }
+        
+        .mini-btn:active, .btn-mini-active { color: var(--pure-white) !important; border-color: #555 !important; text-shadow: var(--active-glow); }
+        
         .divider { width: 1px; height: 40px; background: #333; }
         .sliding-badge-plate { width: 100%; height: 100%; background: linear-gradient(135deg, rgba(45, 48, 52, 0.6) 0%, rgba(10, 11, 13, 0.85) 100%); backdrop-filter: blur(6px); display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.05); }
         .logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
@@ -84,7 +90,9 @@
 
     <div class="hi-fi-container">
         <div class="drawer-wrapper">
-            <div class="power-btn-container"><button class="power-btn" id="power-toggle"><i class="fa-solid fa-power-off"></i></button></div>
+            <div class="power-btn-container">
+                <button class="power-btn btn-active" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
+            </div>
             <div class="drawer-slot-area" id="drawer-area"><div class="disc-drawer-front"><img src="img/mash_logo_t.png" alt="MASH" class="mash-logo-drawer"></div></div>
             <div></div>
         </div>
@@ -146,7 +154,7 @@
         </div>
 
         <div class="overlay" id="artwork-overlay"><div class="modal-content" style="text-align:center; background:none; border:none;"><span class="modal-close" id="close-artwork">&times;</span><img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333;"></div></div>
-        <div class="overlay" id="playlist-overlay"><div class="modal-content"><div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0; font-size:13px; color:var(--gold); font-family: var(--font-modern); font-weight: 600; letter-spacing:2px;">PLAYLIST</h3><span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span></div><div id="playlist-items"></div></div></div>
+        <div class="overlay" id="playlist-overlay"><div class="modal-content"><div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0; font-size:13px; color:var(--pure-white); font-family: var(--font-modern); font-weight: 600; letter-spacing:2px; text-shadow: var(--active-glow);">PLAYLIST</h3><span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span></div><div id="playlist-items"></div></div></div>
         
         <input type="file" id="file-input" multiple style="display:none" accept=".mp3,.flac,.wav,.m4a">
     </div>
@@ -207,6 +215,9 @@
         drawVU();
 
         function showVolLCD() {
+            // Check if logo is displayed
+            if (document.getElementById('lcd-logo').style.display !== 'none') return;
+            
             const display = document.getElementById('volume-display-lcd');
             if(audio.muted) return; 
             display.textContent = `VOL ${Math.round(audio.volume * 100)}%`;
@@ -217,6 +228,9 @@
         }
 
         function showVuLCD() {
+            // Check if logo is displayed
+            if (document.getElementById('lcd-logo').style.display !== 'none') return;
+
             const display = document.getElementById('vu-display-lcd');
             display.textContent = `VU SENS ${vuSensitivity.toFixed(2)}`;
             display.style.display = 'block';
@@ -288,6 +302,7 @@
         document.getElementById('vu-mode-btn').onclick = () => {
             vuVisible = !vuVisible;
             document.getElementById('vu-area').style.display = (vuVisible && playlist.length > 0) ? 'flex' : 'none';
+            document.getElementById('vu-mode-btn').classList.toggle('btn-mini-active', vuVisible);
         };
 
         function updateDisplay() {
@@ -313,7 +328,10 @@
                 });
                 const playBtn = document.getElementById('play-btn');
                 if (audio.paused) playBtn.classList.add('paused-blink'); else playBtn.classList.remove('paused-blink');
-                playBtn.style.color = audio.paused ? "#777" : "var(--gold)";
+                
+                playBtn.style.color = audio.paused ? "#777" : "var(--pure-white)";
+                if(!audio.paused) playBtn.style.textShadow = "var(--active-glow)";
+                else playBtn.style.textShadow = "none";
             }
         }
 
