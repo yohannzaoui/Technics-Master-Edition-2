@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mission 778CDT - Corrected Symmetry</title>
+    <title>Mission 778CDT - Wide Chassis</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
@@ -12,7 +12,7 @@
             --lcd-bg: #000000;
             --gold: #d4af37;
             --led-red: #ff1100;
-            --led-off: #330000;
+            --led-off: #1a0000;
             --badge-bg: #080808;
             --border-black: #000000;
         }
@@ -31,38 +31,57 @@
 
         .hi-fi-container {
             background: var(--chassis-gradient);
-            width: 95%;
-            max-width: 1200px;
+            width: 98%; /* Augmenté */
+            max-width: 1400px; /* Élargissement significatif du châssis */
             min-height: 600px;
-            padding: 40px 60px;
+            padding: 0 80px 40px; /* Padding latéral augmenté pour l'équilibre */
             border-radius: 4px;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1);
             position: relative;
-            border-bottom: 10px solid #111;
+            border-bottom: 12px solid #111;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
-        .disc-drawer-container {
-            width: 70%;
-            margin: 0 auto 50px;
-            padding: 3px; 
-            background-color: var(--border-black);
+        .drawer-wrapper {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drawer-slot-area {
+            width: 60%; /* Proportion ajustée à la nouvelle largeur */
+            height: 38px;
+            background-color: var(--border-black); 
+            border: 3px solid var(--border-black);
             border-radius: 2px;
-            z-index: 2;
+            position: relative;
+            overflow: hidden; 
+            z-index: 5;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
         .disc-drawer-front {
-            height: 34px; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: var(--chassis-gradient);
-            border-radius: 1px;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .drawer-slot-area.open .disc-drawer-front {
+            transform: translateY(100%);
         }
 
         .interface-grid {
             display: grid;
-            grid-template-columns: 120px 1fr 120px;
-            gap: 20px;
+            grid-template-columns: 140px 1fr 140px; /* Colonnes latérales légèrement plus larges */
+            gap: 40px; /* Espace augmenté entre les colonnes */
             align-items: center; 
             z-index: 2;
         }
@@ -70,85 +89,84 @@
         .controls-column {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
         }
 
         .btn-group-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .btn-square {
             background: linear-gradient(145deg, #3a3c3f, #1a1c1e);
             border: 1px solid #000;
             color: #777;
-            height: 32px;
+            height: 34px;
             cursor: pointer;
             border-radius: 2px;
-            font-size: 13px;
+            font-size: 14px;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: color 0.2s;
+            transition: all 0.2s;
         }
 
-        .btn-wide { width: 110px; }
-        .btn-small { width: 50px; }
+        .btn-square:active { transform: scale(0.95); }
+        .btn-wide { width: 120px; }
+        .btn-small { width: 54px; }
 
         .lcd-screen {
             background: var(--lcd-bg);
             border: 1px solid #222;
             padding: 20px;
-            text-align: center;
             border-radius: 4px;
-            min-height: 220px;
+            min-height: 240px; /* Écran légèrement plus haut pour suivre l'échelle */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 0 60px rgba(255,255,255,0.02);
+            box-shadow: inset 0 0 80px rgba(255,255,255,0.02);
             box-sizing: border-box;
         }
 
-        .brand-logo { height: 45px; width: auto; filter: grayscale(1); opacity: 0.85; }
+        .brand-logo { 
+            height: 50px; width: auto; filter: grayscale(1); 
+            opacity: 0.85; transition: opacity 0.5s ease; 
+        }
 
         .track-info {
-            font-size: 18px;
-            margin-top: 20px;
-            color: #444;
-            letter-spacing: 10px;
-            text-transform: uppercase;
+            font-size: 20px; margin-top: 25px; color: #444;
+            letter-spacing: 12px; text-transform: uppercase;
             font-family: 'Courier New', Courier, monospace;
+            min-height: 1.2em;
         }
 
         .power-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 40px;
-            margin-bottom: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            margin-top: 50px; margin-bottom: 30px;
         }
 
         .power-btn {
             background: radial-gradient(circle, #444, #111);
             border: 2px solid #000;
-            width: 65px; height: 65px; border-radius: 50%;
-            color: #333; cursor: pointer; font-size: 22px;
+            width: 70px; height: 70px; border-radius: 50%;
+            color: #333; cursor: pointer; font-size: 24px;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.8);
         }
 
         .power-led {
-            width: 8px; height: 8px; background: var(--led-red); border-radius: 50%;
-            margin-top: 15px; box-shadow: 0 0 10px var(--led-red);
+            width: 9px; height: 9px; background: var(--led-red); border-radius: 50%;
+            margin-top: 18px; box-shadow: 0 0 10px var(--led-red);
+            transition: all 0.3s ease;
         }
 
         .power-led.off { background: var(--led-off); box-shadow: none; }
 
         .unified-bottom-badge {
             background-color: var(--badge-bg);
-            padding: 15px 50px;
+            padding: 20px 60px;
             border-radius: 12px;
             border: 1px solid #1a1a1a;
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.9);
@@ -156,45 +174,45 @@
             justify-content: space-between;
             align-items: center;
             margin-top: auto;
+            width: 100%; /* S'adapte à la nouvelle largeur */
+            box-sizing: border-box;
         }
 
-        .badge-logo { height: 22px; filter: grayscale(1) brightness(1.3); }
-        .model-label-text { font-weight: 300; font-size: 30px; color: #fff; letter-spacing: 3px; }
+        .badge-logo { height: 26px; filter: grayscale(1) brightness(1.3); }
+        .model-label-text { font-weight: 300; font-size: 34px; color: #fff; letter-spacing: 4px; }
 
     </style>
 </head>
 <body class="dark-mode">
 
     <div class="hi-fi-container">
-        <div class="disc-drawer-container">
-            <div class="disc-drawer-front"></div>
+        <div class="drawer-wrapper">
+            <div class="drawer-slot-area" id="drawer-area">
+                <div class="disc-drawer-front"></div>
+            </div>
         </div>
 
         <div class="interface-grid">
             <div class="controls-column">
-                <button class="btn-square btn-wide" id="eject-btn" title="Eject CD">
-                    <i class="fa-solid fa-eject"></i>
-                </button>
+                <button class="btn-square btn-wide" id="eject-btn"><i class="fa-solid fa-eject"></i></button>
                 <div class="btn-group-row">
-                    <button class="btn-square btn-small" title="Menu"><i class="fa-solid fa-bars"></i></button>
-                    <button class="btn-square btn-small" title="Source"><i class="fa-solid fa-layer-group"></i></button>
+                    <button class="btn-square btn-small"><i class="fa-solid fa-bars"></i></button>
+                    <button class="btn-square btn-small"><i class="fa-solid fa-layer-group"></i></button>
                 </div>
             </div>
 
             <div class="center-panel">
                 <div class="lcd-screen">
                     <img src="img/mission_logo.png" alt="Mission" class="brand-logo" id="lcd-logo">
-                    <div class="track-info" id="track-info">READY</div>
+                    <div class="track-info" id="track-info"></div>
                 </div>
             </div>
 
             <div class="controls-column">
-                <button class="btn-square btn-wide" id="play-btn" title="Play/Pause">
-                    <i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i>
-                </button>
+                <button class="btn-square btn-wide" id="play-btn"><i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i></button>
                 <div class="btn-group-row">
-                    <button class="btn-square btn-small" id="prev-btn" title="Previous"><i class="fa-solid fa-backward-step"></i></button>
-                    <button class="btn-square btn-small" id="next-btn" title="Next"><i class="fa-solid fa-forward-step"></i></button>
+                    <button class="btn-square btn-small" id="prev-btn"><i class="fa-solid fa-backward-step"></i></button>
+                    <button class="btn-square btn-small" id="next-btn"><i class="fa-solid fa-forward-step"></i></button>
                 </div>
             </div>
         </div>
@@ -219,23 +237,50 @@
         const powerLed = document.getElementById('power-led');
         const playBtn = document.getElementById('play-btn');
         const lcdLogo = document.getElementById('lcd-logo');
+        const drawerArea = document.getElementById('drawer-area');
+        
         let isOn = true;
+        let isDrawerOpen = false;
+
+        function resetApplication() {
+            audio.pause();
+            audio.src = "";
+            fileInput.value = "";
+            trackInfo.textContent = "";
+            playBtn.style.color = "#777";
+            drawerArea.classList.remove('open');
+            isDrawerOpen = false;
+        }
 
         document.getElementById('power-toggle').addEventListener('click', () => {
             isOn = !isOn;
             powerLed.classList.toggle('off');
-            lcdLogo.style.opacity = isOn ? "0.85" : "0.02";
-            trackInfo.style.opacity = isOn ? "1" : "0";
-            if (!isOn) audio.pause();
+            if (!isOn) {
+                resetApplication();
+                lcdLogo.style.opacity = "0.02"; 
+                trackInfo.style.opacity = "0";
+            } else {
+                lcdLogo.style.opacity = "0.85";
+                trackInfo.style.opacity = "1";
+            }
         });
 
         document.getElementById('eject-btn').addEventListener('click', () => {
-            if(isOn) fileInput.click();
+            if(!isOn) return;
+            isDrawerOpen = !isDrawerOpen;
+            if (isDrawerOpen) {
+                drawerArea.classList.add('open');
+                setTimeout(() => { if(isDrawerOpen) fileInput.click(); }, 600);
+            } else {
+                drawerArea.classList.remove('open');
+            }
         });
 
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && isOn) {
+                drawerArea.classList.remove('open');
+                isDrawerOpen = false;
                 const url = URL.createObjectURL(file);
                 audio.src = url;
                 trackInfo.textContent = file.name.substring(0, 15).toUpperCase();
