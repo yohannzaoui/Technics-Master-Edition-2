@@ -59,7 +59,7 @@
         .lcd-value { font-size: 20px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; pointer-events: none; }
         .brand-logo { height: 45px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
         
-        #volume-display-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 14px; color: var(--gold); font-weight: 900; letter-spacing: 1px; display: none; z-index: 26; }
+        #volume-display-lcd, #vu-display-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 14px; color: var(--gold); font-weight: 900; letter-spacing: 1px; display: none; z-index: 26; white-space: nowrap; }
         #mute-status-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #ff0000; font-weight: 900; letter-spacing: 2px; display: none; text-shadow: 0 0 8px rgba(255,0,0,0.6); z-index: 25; }
 
         .vu-meter-area { position: absolute; bottom: 0; left: 0; width: 100%; display: none; flex-direction: column; gap: 4px; padding-bottom: 12px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
@@ -100,6 +100,7 @@
                 
                 <div id="mute-status-lcd">MUTE</div>
                 <div id="volume-display-lcd">VOL 5%</div>
+                <div id="vu-display-lcd">VU SENS 0.60</div>
 
                 <div class="status-container" id="playlist-container" style="right:40px; text-align:right;"><span class="lcd-label">TRACK</span><span class="lcd-value" id="playlist-status">00/00</span></div>
 
@@ -159,7 +160,7 @@
         const numSegments = 60;
         let vuSensitivity = 0.6;
         let vuVisible = true;
-        let volTimer, volRepeatInterval;
+        let volTimer, vuTimer, volRepeatInterval, vuRepeatInterval;
 
         let scanInterval, holdTimer, isScanning = false;
         let audioCtx, source, analyserL, analyserR, splitter, isAudioInit = false;
@@ -210,8 +211,18 @@
             if(audio.muted) return; 
             display.textContent = `VOL ${Math.round(audio.volume * 100)}%`;
             display.style.display = 'block';
+            document.getElementById('vu-display-lcd').style.display = 'none';
             clearTimeout(volTimer);
             volTimer = setTimeout(() => { display.style.display = 'none'; }, 1000);
+        }
+
+        function showVuLCD() {
+            const display = document.getElementById('vu-display-lcd');
+            display.textContent = `VU SENS ${vuSensitivity.toFixed(2)}`;
+            display.style.display = 'block';
+            document.getElementById('volume-display-lcd').style.display = 'none';
+            clearTimeout(vuTimer);
+            vuTimer = setTimeout(() => { display.style.display = 'none'; }, 1000);
         }
 
         function changeVolume(delta) {
@@ -228,19 +239,39 @@
                 volRepeatInterval = setInterval(() => changeVolume(delta), 50);
             };
             const stopRepeat = () => { clearInterval(volRepeatInterval); };
-
             btn.onmousedown = (e) => { if(e.button === 0) startRepeat(); };
             btn.onmouseup = stopRepeat;
             btn.onmouseleave = stopRepeat;
             btn.ontouchstart = (e) => { e.preventDefault(); startRepeat(); };
             btn.ontouchend = stopRepeat;
-            
-            // Show volume on hover
             btn.onmouseenter = showVolLCD;
         }
 
         setupVolButton('vol-inc', 0.01);
         setupVolButton('vol-dec', -0.01);
+
+        function changeVUSensitivity(delta) {
+            vuSensitivity = Math.max(0.2, Math.min(3.0, vuSensitivity + delta));
+            showVuLCD();
+        }
+
+        function setupVUButton(id, delta) {
+            const btn = document.getElementById(id);
+            const startRepeat = () => {
+                changeVUSensitivity(delta);
+                vuRepeatInterval = setInterval(() => changeVUSensitivity(delta), 50);
+            };
+            const stopRepeat = () => { clearInterval(vuRepeatInterval); };
+            btn.onmousedown = (e) => { if(e.button === 0) startRepeat(); };
+            btn.onmouseup = stopRepeat;
+            btn.onmouseleave = stopRepeat;
+            btn.ontouchstart = (e) => { e.preventDefault(); startRepeat(); };
+            btn.ontouchend = stopRepeat;
+            btn.onmouseenter = showVuLCD;
+        }
+
+        setupVUButton('vu-inc', 0.05);
+        setupVUButton('vu-dec', -0.05);
 
         document.getElementById('mute-btn').onclick = () => {
             audio.muted = !audio.muted;
@@ -258,9 +289,6 @@
             vuVisible = !vuVisible;
             document.getElementById('vu-area').style.display = (vuVisible && playlist.length > 0) ? 'flex' : 'none';
         };
-
-        document.getElementById('vu-inc').onclick = () => { vuSensitivity = Math.min(3.0, vuSensitivity + 0.2); };
-        document.getElementById('vu-dec').onclick = () => { vuSensitivity = Math.max(0.2, vuSensitivity - 0.2); };
 
         function updateDisplay() {
             if (playlist.length > 0) {
