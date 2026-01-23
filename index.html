@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Technics 778CDT - Grand Master Edition</title>
+    <title>Technics 778CDT - Grand Master Skeleton Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
@@ -13,7 +13,6 @@
             --lcd-bg: #000000;
             --gold: #d4af37;
             --pure-white: #ffffff;
-            --badge-bg: #080808;
             --backlight: rgba(255, 255, 255, 0.7); 
         }
 
@@ -32,7 +31,7 @@
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight);
         }
 
-        /* MODALS & OVERLAYS */
+        /* OVERLAYS */
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(8px); }
         .modal-content { background: #111; border: 1px solid #333; border-radius: 4px; position: relative; width: 600px; z-index: 1001; }
         .modal-close { position: absolute; top: -50px; right: 0; color: #555; font-size: 40px; cursor: pointer; }
@@ -41,7 +40,7 @@
         .playlist-item:hover { background: #1a1a1a; color: var(--gold); }
         .playlist-item.active { color: var(--gold); font-weight: bold; background: #080808; }
 
-        /* SECTION CD AVEC POWER À GAUCHE */
+        /* CD SECTION AVEC POWER À GAUCHE */
         .drawer-wrapper { 
             height: 130px; 
             display: grid; 
@@ -52,10 +51,12 @@
         }
 
         .power-btn-container { display: flex; justify-content: center; align-items: center; }
+        
         .power-btn { 
             background: linear-gradient(145deg, #3a3c3f, #1a1c1e); 
             border: 1px solid #000; 
-            color: #777; 
+            color: var(--gold); 
+            text-shadow: 0 0 5px var(--gold);
             height: 45px; 
             width: 82px; 
             cursor: pointer; 
@@ -65,7 +66,6 @@
             justify-content: center; 
             transition: 0.2s; 
         }
-        .power-btn.on { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
 
         .drawer-slot-area { width: 100%; height: 85px; background-color: #000; border: 2px solid #111; border-radius: 2px; position: relative; overflow: hidden; }
         .disc-drawer-front { 
@@ -94,18 +94,27 @@
         .lcd-value { font-size: 20px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; pointer-events: none; }
         .brand-logo { height: 45px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
 
-        /* TRAPPE BASSE */
+        /* TRAPPE BASSE (VERRE FUMÉ) */
         .logo-slot-container { 
             width: 100%; height: 140px; border: 3px solid #000; border-radius: 4px; 
             position: relative; overflow: hidden; background-color: #030303; margin-top: 20px; box-sizing: border-box;
         }
-        .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; padding: 0 30px; box-sizing: border-box; flex-wrap: wrap; align-content: center; }
+        .sub-controls-inner { 
+            width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; 
+            gap: 15px; padding: 0 30px; box-sizing: border-box; flex-wrap: wrap; align-content: center;
+            opacity: 0.6;
+        }
         .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 8px 12px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 70px; text-align: center; text-transform: uppercase; }
         .divider { width: 1px; height: 35px; background: #222; }
 
         .sliding-badge-plate { 
-            width: 100%; height: 100%; background: var(--chassis-gradient); display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; 
-            position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+            width: 100%; height: 100%; 
+            background: linear-gradient(135deg, rgba(45, 48, 52, 0.6) 0%, rgba(10, 11, 13, 0.85) 100%);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; 
+            position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1), inset -1px -1px 0 rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
         .sliding-badge-plate img:first-child { height: 26px; width: auto; filter: grayscale(1) brightness(1.5); }
@@ -117,7 +126,7 @@
     <div class="hi-fi-container">
         <div class="drawer-wrapper">
             <div class="power-btn-container">
-                <button class="power-btn on" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
+                <button class="power-btn" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
             </div>
             <div class="drawer-slot-area" id="drawer-area">
                 <div class="disc-drawer-front">
@@ -145,9 +154,7 @@
                     <span class="lcd-label">TRACK</span>
                     <span class="lcd-value" id="playlist-status">00/00</span>
                 </div>
-                
                 <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
-                
                 <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 12px; width:95%; z-index: 30;">
                     <div id="track-title" style="font-size:24px; color:white; cursor:pointer; text-align:center; font-family:'Courier New'; font-weight: bold;"></div>
                     <div id="track-meta" style="font-size:13px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-family:'Courier New';"></div>
@@ -181,22 +188,8 @@
             </div>
         </div>
 
-        <div class="overlay" id="artwork-overlay">
-            <div class="modal-content" style="text-align:center; background:none; border:none;">
-                <span class="modal-close" id="close-artwork">&times;</span>
-                <img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333; margin-bottom:25px;">
-            </div>
-        </div>
-        
-        <div class="overlay" id="playlist-overlay">
-            <div class="modal-content">
-                <div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
-                    <h3 style="margin:0; font-size:13px; color:var(--gold); letter-spacing:2px;">TECHNICS PLAYLIST</h3>
-                    <span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span>
-                </div>
-                <div id="playlist-items"></div>
-            </div>
-        </div>
+        <div class="overlay" id="artwork-overlay"><div class="modal-content" style="text-align:center; background:none; border:none;"><span class="modal-close" id="close-artwork">&times;</span><img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333; margin-bottom:25px;"></div></div>
+        <div class="overlay" id="playlist-overlay"><div class="modal-content"><div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0; font-size:13px; color:var(--gold); letter-spacing:2px;">TECHNICS PLAYLIST</h3><span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span></div><div id="playlist-items"></div></div></div>
 
         <input type="file" id="file-input" multiple style="display:none" accept=".mp3,.flac,.wav,.m4a">
     </div>
@@ -204,7 +197,6 @@
     <script>
         const jsmediatags = window.jsmediatags;
         const audio = new Audio();
-        let isOn = true;
         let playlist = [];
         let currentIndex = 0;
         let showRemaining = false;
@@ -229,7 +221,7 @@
             return `${formatNum(mins)}:${formatNum(secs)}`;
         }
 
-        menuBtn.onclick = () => { if(isOn) { logoSlot.classList.toggle('open'); menuBtn.classList.toggle('btn-active'); } };
+        menuBtn.onclick = () => { logoSlot.classList.toggle('open'); menuBtn.classList.toggle('btn-active'); };
 
         function updateDisplay() {
             if (playlist.length > 0) {
@@ -261,7 +253,6 @@
         }
 
         document.getElementById('time-container').onclick = (e) => { e.stopPropagation(); showRemaining = !showRemaining; updateTime(); };
-        
         document.getElementById('playlist-container').onclick = (e) => {
             e.stopPropagation();
             if(playlist.length === 0) return;
@@ -285,17 +276,17 @@
         };
 
         function playTrack(index) {
-            if (!isOn || index < 0 || index >= playlist.length) return;
+            if (index < 0 || index >= playlist.length) return;
             currentIndex = index;
             audio.src = URL.createObjectURL(playlist[currentIndex]);
             audio.play().then(() => updateDisplay());
         }
 
-        document.getElementById('eject-btn').onclick = () => { if(isOn) drawerArea.classList.toggle('open'); if(drawerArea.classList.contains('open')) setTimeout(() => fileInput.click(), 600); };
+        document.getElementById('eject-btn').onclick = () => { drawerArea.classList.toggle('open'); if(drawerArea.classList.contains('open')) setTimeout(() => fileInput.click(), 600); };
         fileInput.onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); drawerArea.classList.remove('open'); playTrack(0); } };
-        playBtn.onclick = () => { if (isOn && playlist.length > 0) { if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
-        document.getElementById('next-btn').onclick = () => { if (isOn && currentIndex < playlist.length - 1) playTrack(currentIndex + 1); };
-        document.getElementById('prev-btn').onclick = () => { if (isOn && currentIndex > 0) playTrack(currentIndex - 1); };
+        playBtn.onclick = () => { if (playlist.length > 0) { if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
+        document.getElementById('next-btn').onclick = () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); };
+        document.getElementById('prev-btn').onclick = () => { if (currentIndex > 0) playTrack(currentIndex - 1); };
         
         function updateTime() {
             if (!audio.duration) return;
@@ -308,11 +299,9 @@
         document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
         document.getElementById('close-artwork').onclick = () => document.getElementById('artwork-overlay').style.display = 'none';
 
+        // ACTION : Rafraîchir la page lors de l'appui sur Power
         powerBtn.onclick = () => {
-            isOn = !isOn;
-            powerBtn.classList.toggle('on');
-            if (!isOn) { audio.pause(); lcdLogo.style.display = 'block'; infoBlock.style.display = 'none'; document.getElementById('time-container').style.opacity = "0"; document.getElementById('playlist-container').style.opacity = "0"; }
-            else if(playlist.length > 0) { updateDisplay(); }
+            location.reload();
         };
     </script>
 </body>
