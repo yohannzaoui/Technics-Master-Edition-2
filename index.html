@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technics Master HiFi</title>
+    
+    <meta name="keywords" content="Technics, Hi-Fi, CD Player, Audio, Skeleton Edition, Web Audio API, Music Player, 778CDT">
+    
+    <link rel="manifest" href="manifest.json">
+    
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Technics Hi-Fi">
+    <link rel="apple-touch-icon" href="img/favicon.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+</head>
+<body>
+
+    <div class="hi-fi-container">
+        <div class="drawer-wrapper">
+            <div class="power-btn-container">
+                <button class="power-btn btn-active" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
+            </div>
+            <div class="drawer-slot-area" id="drawer-area">
+                <div class="disc-drawer-front">
+                    <img src="img/mash_logo_t.png" alt="MASH" class="mash-logo-drawer">
+                </div>
+            </div>
+            <div></div>
+        </div>
+
+        <div class="interface-grid">
+            <div class="controls-column">
+                <button class="btn-square" id="eject-btn" style="width:100%"><i class="fa-solid fa-eject"></i></button>
+                <div style="display:flex; gap:15px;">
+                    <button class="btn-square" id="menu-btn" style="width:50%"><i class="fa-solid fa-bars"></i></button>
+                    <button class="btn-square" style="width:50%"><i class="fa-solid fa-layer-group"></i></button>
+                </div>
+            </div>
+
+            <div class="lcd-screen" id="main-lcd">
+                <div class="status-container" id="time-container" style="left:40px; text-align:left;">
+                    <span class="lcd-label">TIME</span>
+                    <span class="lcd-value" id="time-display">00:00</span>
+                </div>
+                
+                <div class="lcd-alerts">
+                    <div id="mute-status-lcd">MUTE</div>
+                </div>
+
+                <div id="volume-display-lcd">VOL 5%</div>
+                <div id="vu-display-lcd">VU SENS 0.60</div>
+                <div id="tone-display-lcd">BASS +00</div>
+
+                <div class="status-container" id="playlist-container" style="right:40px; text-align:right;">
+                    <span class="lcd-label">TRACK</span>
+                    <span class="lcd-value" id="playlist-status">00/00</span>
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                        <div id="repeat-status-lcd">REPEAT</div>
+                        <div id="random-status-lcd">RANDOM</div>
+                        <div id="ab-status-lcd">A-B</div>
+                    </div>
+                </div>
+
+                <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
+
+                <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 8px; width:95%; z-index: 30;">
+                    <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+                        <div id="track-title" style="font-size:24px; color:white; cursor:pointer; text-align:center; font-family: var(--font-modern); font-weight: 600; letter-spacing: 0px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;"></div>
+                        <span id="file-format-badge" style="display:none;"></span>
+                    </div>
+                    <div id="track-meta" style="font-size:12px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-family: var(--font-modern); font-weight: 400; letter-spacing: 2px;"></div>
+                </div>
+
+                <div class="vu-meter-area" id="vu-area">
+                    <div class="vu-row"><span class="vu-label">L</span><div class="vu-segments" id="vu-left"></div></div>
+                    <div class="vu-row"><span class="vu-label">R</span><div class="vu-segments" id="vu-right"></div></div>
+                </div>
+            </div>
+
+            <div class="controls-column">
+                <button class="btn-square" id="play-btn" style="width:100%"><i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i></button>
+                <div style="display:flex; gap:15px;">
+                    <button class="btn-square" id="prev-btn" style="width:50%"><i class="fa-solid fa-backward-step"></i></button>
+                    <button class="btn-square" id="next-btn" style="width:50%"><i class="fa-solid fa-forward-step"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div style="height: 100px;"></div>
+
+        <div class="logo-slot-container" id="logo-slot">
+            <div class="sub-controls-inner">
+                <button class="mini-btn" id="vol-dec">VOL -</button>
+                <button class="mini-btn" id="mute-btn" style="min-width: 50px; padding: 10px 5px;">
+                    <i id="mute-icon" class="fa-solid fa-volume-high"></i>
+                </button>
+                <button class="mini-btn" id="vol-inc">VOL +</button>
+                
+                <div class="divider"></div>
+                <button class="mini-btn" id="bass-dec">BASS -</button>
+                <button class="mini-btn" id="bass-inc">BASS +</button>
+                <div class="divider"></div>
+                <button class="mini-btn" id="treb-dec">TREB -</button>
+                <button class="mini-btn" id="treb-inc">TREB +</button>
+                <div class="divider"></div>
+                <button class="mini-btn" id="vu-dec" style="min-width: 50px; padding: 10px 5px;">VU -</button>
+                <button class="mini-btn btn-mini-active" id="vu-mode-btn" style="min-width: 50px; padding: 10px 5px;">VU</button>
+                <button class="mini-btn" id="vu-inc" style="min-width: 50px; padding: 10px 5px;">VU +</button>
+                <div class="divider"></div>
+                <button class="mini-btn" id="repeat-btn">REPEAT</button>
+                <button class="mini-btn" id="ab-repeat-btn">A-B</button>
+                <button class="mini-btn" id="random-btn">RANDOM</button>
+            </div>
+            <div class="sliding-badge-plate">
+                <img src="img/Technics-Logo-org.png" alt="Technics" height="26">
+                <img src="img/HR_logo.png" alt="High-Res" height="50">
+            </div>
+        </div>
+
+        <div class="overlay" id="artwork-overlay">
+            <div class="modal-content" style="text-align:center; background:none; border:none;">
+                <span class="modal-close" id="close-artwork">&times;</span>
+                <img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333;">
+            </div>
+        </div>
+        
+        <div class="overlay" id="playlist-overlay">
+            <div class="modal-content">
+                <div style="padding:20px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="margin:0; font-size:13px; color:var(--pure-white); font-family: var(--font-modern); font-weight: 600; letter-spacing:2px;">PLAYLIST</h3>
+                    <span id="close-playlist" style="color:#555; cursor:pointer; font-size:28px;">&times;</span>
+                </div>
+                <div id="playlist-items"></div>
+            </div>
+        </div>
+        
+        <input type="file" id="file-input" multiple style="display:none" accept=".mp3,.flac,.wav,.m4a">
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
