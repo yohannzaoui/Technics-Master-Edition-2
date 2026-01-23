@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mission 778CDT - Full Info Artwork</title>
+    <title>Technics 778CDT - HR 90px Full Restoration</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
@@ -16,7 +16,6 @@
             --led-red: #ff1100;
             --led-off: #1a0000;
             --badge-bg: #080808;
-            --border-black: #000000;
             --backlight: rgba(255, 255, 255, 0.7); 
         }
 
@@ -32,130 +31,77 @@
             width: 1376px; height: 640px; padding: 20px 70px 30px; 
             border-radius: 4px; position: relative; border-bottom: 12px solid #111;
             display: flex; flex-direction: column; box-sizing: border-box;
-            box-shadow: 
-                inset 0 1px 0 rgba(255,255,255,0.1), 0 30px 80px rgba(0,0,0,1),
-                0 -40px 180px var(--backlight), -60px 0 120px rgba(255, 255, 255, 0.2), 60px 0 120px rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 30px 80px rgba(0,0,0,1), 0 -40px 180px var(--backlight);
         }
 
-        /* DRAWER */
+        /* MODALS (ARTWORK & PLAYLIST) */
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(8px); }
+        .modal-content { background: #111; border: 1px solid #333; border-radius: 4px; position: relative; width: 500px; }
+        .modal-close { position: absolute; top: -50px; right: 0; color: #555; font-size: 40px; cursor: pointer; }
+        #playlist-items { max-height: 400px; overflow-y: auto; }
+        .playlist-item { padding: 12px 20px; border-bottom: 1px solid #222; cursor: pointer; font-size: 11px; font-family: 'Courier New'; text-transform: uppercase; color: #888; }
+        .playlist-item:hover { background: #1a1a1a; color: var(--gold); }
+        .playlist-item.active { color: var(--gold); font-weight: bold; background: #080808; }
+
+        /* CD DRAWER */
         .drawer-wrapper { height: 100px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-        .drawer-slot-area {
-            width: 50%; height: 38px; background-color: var(--border-black); 
-            border: 2px solid var(--border-black); border-radius: 2px; position: relative; overflow: hidden;
-        }
-        .disc-drawer-front {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--chassis-gradient); transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .drawer-slot-area { width: 50%; height: 38px; background-color: #000; border: 2px solid #000; border-radius: 2px; position: relative; overflow: hidden; }
+        .disc-drawer-front { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--chassis-gradient); transition: transform 0.6s; }
         .drawer-slot-area.open .disc-drawer-front { transform: translateY(100%); }
 
-        /* GRID */
+        /* INTERFACE GRID */
         .interface-grid { display: grid; grid-template-columns: 140px 1fr 140px; gap: 50px; align-items: center; flex-grow: 1; }
-        .controls-column { display: flex; flex-direction: column; gap: 25px; justify-content: center; height: 100%; }
-        
-        .btn-square {
-            background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000;
-            color: #777; height: 38px; cursor: pointer; border-radius: 2px;
-            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-size: 14px;
-        }
-        .btn-square:active { transform: scale(0.95); }
-        .btn-wide { width: 100%; }
-        .btn-small { width: calc(50% - 6px); }
-        .btn-group-row { display: flex; gap: 12px; }
+        .controls-column { display: flex; flex-direction: column; gap: 25px; }
+        .btn-square { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 38px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-active { color: var(--gold) !important; text-shadow: 0 0 5px var(--gold); }
 
-        /* ANIMATIONS */
-        @keyframes pulse-yellow {
-            0% { color: #777; text-shadow: none; }
-            50% { color: #ffcc00; text-shadow: 0 0 10px rgba(255, 204, 0, 0.6); }
-            100% { color: #777; text-shadow: none; }
-        }
+        /* BLINKING PAUSE EFFECT */
+        @keyframes pulse-yellow { 0%, 100% { color: #777; } 50% { color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.4); } }
         .paused-blink { animation: pulse-yellow 1.5s infinite ease-in-out; }
 
         /* LCD */
-        .lcd-screen {
-            background: var(--lcd-bg); border: 1px solid #222; padding: 25px; border-radius: 4px;
-            height: 240px; display: flex; flex-direction: column; justify-content: center;
-            align-items: center; box-shadow: inset 0 0 60px rgba(255,255,255,0.02);
-            box-sizing: border-box; position: relative;
-        }
-
-        .status-container { position: absolute; top: 18px; opacity: 0; transition: opacity 0.5s ease; cursor: pointer; }
-        #time-container { left: 25px; text-align: left; }
-        #playlist-container { right: 25px; text-align: right; }
-
+        .lcd-screen { background: var(--lcd-bg); border: 1px solid #222; padding: 25px; border-radius: 4px; height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
+        .status-container { position: absolute; top: 18px; opacity: 0; transition: 0.5s; cursor: pointer; }
         .lcd-label { display: block; font-size: 9px; color: #444; letter-spacing: 2px; font-weight: 900; margin-bottom: 2px; }
-        .lcd-value { font-size: 16px; color: var(--gold); font-family: 'Courier New', Courier, monospace; font-weight: bold; }
+        .lcd-value { font-size: 16px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; }
+        .brand-logo { height: 35px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
 
-        .brand-logo { height: 45px; width: auto; filter: grayscale(1); opacity: 0.85; transition: opacity 0.4s ease; }
-        .brand-logo.hidden { opacity: 0; pointer-events: none; }
+        /* TRAPPE ESCAMOTABLE - 90PX LOGO SUPPORT */
+        .logo-slot-container { width: 100%; height: 130px; border: 2px solid #1a1a1a; border-radius: 8px; position: relative; overflow: hidden; background-color: #030303; margin-top: 10px; }
+        .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 12px; padding: 0 20px; box-sizing: border-box; }
+        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 5px 8px; font-size: 10px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 55px; text-align: center; text-transform: uppercase; }
+        .divider { width: 1px; height: 25px; background: #222; }
 
-        .track-info-block { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 95%; }
-        .title-row { display: flex; align-items: center; gap: 15px; justify-content: center; width: 100%; }
+        .sliding-badge-plate { width: 100%; height: 100%; background-color: var(--badge-bg); display: flex; justify-content: space-between; align-items: center; padding: 0 60px; box-sizing: border-box; border: 1px solid #1a1a1a; position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
         
-        .track-title { 
-            font-size: 19px; color: var(--pure-white); letter-spacing: 2px; text-transform: uppercase; 
-            font-family: 'Courier New', Courier, monospace; text-align: center; cursor: pointer;
-            overflow: hidden; white-space: nowrap; max-width: 80%; transition: opacity 0.2s;
-        }
-        .track-title:hover { opacity: 0.7; color: var(--gold); }
+        .hr-logo-badge { height: 50px; width: auto; } /* LOGO HR À 90PX */
 
-        .format-badge { font-size: 9px; color: #aaa; border: 1px solid #444; padding: 2px 6px; border-radius: 3px; font-family: sans-serif; font-weight: bold; }
-        .track-meta { font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 1px; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; text-align: center; white-space: nowrap; width: 100%; }
-
-        /* POPUP ARTWORK ET INFOS */
-        .artwork-overlay { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.92); display: none; justify-content: center; align-items: center; z-index: 100;
-            backdrop-filter: blur(8px);
-        }
-        .artwork-content { position: relative; text-align: center; width: 500px; display: flex; flex-direction: column; align-items: center; }
-        .artwork-content img { width: 400px; height: 400px; object-fit: cover; border: 1px solid #333; box-shadow: 0 0 60px rgba(0,0,0,1); margin-bottom: 25px; }
-        .artwork-close { position: absolute; top: -50px; right: 0; color: #555; font-size: 40px; cursor: pointer; transition: color 0.2s; }
-        .artwork-close:hover { color: white; }
-
-        .info-details { font-family: 'Courier New', Courier, monospace; width: 100%; }
-        .info-details .art-title { color: var(--pure-white); font-size: 20px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
-        .info-details .art-album { color: var(--gold); font-size: 14px; margin-bottom: 5px; opacity: 0.9; }
-        .info-details .art-artist { color: rgba(255,255,255,0.6); font-size: 13px; letter-spacing: 1px; margin-bottom: 12px; }
-        .info-details .art-format { display: inline-block; font-size: 10px; border: 1px solid #444; padding: 2px 10px; color: #888; border-radius: 2px; }
-
-        /* POWER & BADGE */
-        .power-section { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
-        .power-btn { background: radial-gradient(circle, #444, #111); border: 2px solid #000; width: 60px; height: 60px; border-radius: 50%; color: #333; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        /* POWER */
+        .power-section { display: flex; flex-direction: column; align-items: center; margin: 10px 0; }
+        .power-btn { background: radial-gradient(circle, #444, #111); border: 2px solid #000; width: 60px; height: 60px; border-radius: 50%; color: #333; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .power-led { width: 8px; height: 8px; background: var(--led-red); border-radius: 50%; margin-top: 10px; box-shadow: 0 0 8px var(--led-red); }
         .power-led.off { background: var(--led-off); box-shadow: none; }
-
-        .unified-bottom-badge { background-color: var(--badge-bg); padding: 15px 60px; border-radius: 8px; border: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
-        .model-label-text { font-weight: 300; font-size: 30px; color: #fff; letter-spacing: 4px; }
-
-        .playlist-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 50; }
-        .playlist-modal { background: #111; width: 500px; max-height: 400px; border: 1px solid #333; border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <div class="hi-fi-container">
-        <div class="artwork-overlay" id="artwork-overlay">
-            <div class="artwork-content">
-                <span class="artwork-close" id="close-artwork">&times;</span>
-                <img id="album-cover" src="" alt="Cover">
-                <div class="info-details">
-                    <div class="art-title" id="art-title">TITRE</div>
-                    <div class="art-album" id="art-album">ALBUM</div>
-                    <div class="art-artist" id="art-artist">ARTISTE</div>
-                    <div class="art-format" id="art-format">FORMAT</div>
-                </div>
+        <div class="overlay" id="artwork-overlay">
+            <div class="modal-content" style="text-align:center; background:none; border:none;">
+                <span class="modal-close" id="close-artwork">&times;</span>
+                <img id="album-cover" src="" alt="Cover" style="width:400px; height:400px; object-fit:cover; border:1px solid #333; margin-bottom:25px;">
+                <div id="art-title" style="color:white; font-size:18px; font-family:'Courier New'; text-transform:uppercase;"></div>
             </div>
         </div>
 
-        <div class="playlist-overlay" id="playlist-overlay">
-            <div class="playlist-modal">
-                <div style="padding:15px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
-                    <h3 style="margin:0; font-size:12px; color:var(--gold);">DISC CONTENT</h3>
-                    <button id="close-playlist" style="background:none; border:none; color:#555; cursor:pointer; font-size:20px;">&times;</button>
+        <div class="overlay" id="playlist-overlay">
+            <div class="modal-content">
+                <div style="padding:15px; border-bottom:1px solid #222; display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="margin:0; font-size:12px; color:var(--gold); letter-spacing:2px;">TECHNICS PLAYLIST</h3>
+                    <span id="close-playlist" style="color:#555; cursor:pointer; font-size:24px;">&times;</span>
                 </div>
-                <div id="playlist-items" style="overflow-y:auto; max-height:340px;"></div>
+                <div id="playlist-items"></div>
             </div>
         </div>
 
@@ -165,37 +111,34 @@
 
         <div class="interface-grid">
             <div class="controls-column">
-                <button class="btn-square btn-wide" id="eject-btn"><i class="fa-solid fa-eject"></i></button>
-                <div class="btn-group-row">
-                    <button class="btn-square btn-small"><i class="fa-solid fa-bars"></i></button>
-                    <button class="btn-square btn-small"><i class="fa-solid fa-layer-group"></i></button>
+                <button class="btn-square" id="eject-btn" style="width:100%"><i class="fa-solid fa-eject"></i></button>
+                <div style="display:flex; gap:12px;">
+                    <button class="btn-square" id="menu-btn" style="width:50%"><i class="fa-solid fa-bars"></i></button>
+                    <button class="btn-square" style="width:50%"><i class="fa-solid fa-layer-group"></i></button>
                 </div>
             </div>
 
             <div class="lcd-screen">
-                <div class="status-container" id="time-container">
+                <div class="status-container" id="time-container" style="left:25px; text-align:left;">
                     <span class="lcd-label" id="time-label">TIME</span>
                     <span class="lcd-value" id="time-display">00:00</span>
                 </div>
-                <div class="status-container" id="playlist-container">
+                <div class="status-container" id="playlist-container" style="right:25px; text-align:right;">
                     <span class="lcd-label">TRACK</span>
                     <span class="lcd-value" id="playlist-status">00/00</span>
                 </div>
-                <img src="img/mission_logo.png" alt="Mission" class="brand-logo" id="lcd-logo">
-                <div class="track-info-block" id="track-info-block" style="display: none;">
-                    <div class="title-row">
-                        <div class="track-title" id="track-title" title="View Details"></div>
-                        <div class="format-badge" id="format-badge"></div>
-                    </div>
-                    <div class="track-meta" id="track-meta"></div>
+                <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
+                <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 8px; width:90%;">
+                    <div id="track-title" class="lcd-value" style="font-size:19px; color:white; cursor:pointer; text-align:center;"></div>
+                    <div id="track-meta" style="font-size:11px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-family:'Courier New';"></div>
                 </div>
             </div>
 
             <div class="controls-column">
-                <button class="btn-square btn-wide" id="play-btn"><i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i></button>
-                <div class="btn-group-row">
-                    <button class="btn-square btn-small" id="prev-btn"><i class="fa-solid fa-backward-step"></i></button>
-                    <button class="btn-square btn-small" id="next-btn"><i class="fa-solid fa-forward-step"></i></button>
+                <button class="btn-square" id="play-btn" style="width:100%"><i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i></button>
+                <div style="display:flex; gap:12px;">
+                    <button class="btn-square" id="prev-btn" style="width:50%"><i class="fa-solid fa-backward-step"></i></button>
+                    <button class="btn-square" id="next-btn" style="width:50%"><i class="fa-solid fa-forward-step"></i></button>
                 </div>
             </div>
         </div>
@@ -205,48 +148,43 @@
             <div class="power-led" id="power-led"></div>
         </div>
 
-        <div class="unified-bottom-badge">
-            <img src="img/mission_logo.png" alt="Mission" style="height:24px; filter: grayscale(1) brightness(1.5);">
-            <span class="model-label-text">778CDT</span>
+        <div class="logo-slot-container" id="logo-slot">
+            <div class="sub-controls-inner">
+                <button class="mini-btn">VOL-</button><button class="mini-btn">VOL+</button><button class="mini-btn">MUTE</button>
+                <div class="divider"></div>
+                <button class="mini-btn">BASS-</button><button class="mini-btn">BASS+</button>
+                <div class="divider"></div>
+                <button class="mini-btn">TREB-</button><button class="mini-btn">TREB+</button>
+                <div class="divider"></div>
+                <button class="mini-btn">VU</button><button class="mini-btn">RANDOM</button><button class="mini-btn">REPEAT</button><button class="mini-btn">A-B</button>
+            </div>
+            <div class="sliding-badge-plate">
+                <img src="img/Technics-Logo-org.png" alt="Technics" style="height:25px; filter: grayscale(1) brightness(1.5);">
+                <img src="img/HR_logo.png" alt="High-Res" class="hr-logo-badge">
+            </div>
         </div>
 
-        <input type="file" id="file-input" accept=".flac,.mp3,.wav,.m4a" multiple style="display:none">
+        <input type="file" id="file-input" multiple style="display:none" accept=".mp3,.flac,.wav,.m4a">
     </div>
 
     <script>
         const jsmediatags = window.jsmediatags;
         const audio = new Audio();
-        
-        // LCD Elements
-        const trackTitle = document.getElementById('track-title');
-        const trackMeta = document.getElementById('track-meta');
-        const formatBadge = document.getElementById('format-badge');
-        const infoBlock = document.getElementById('track-info-block');
-        const playlistStatus = document.getElementById('playlist-status');
-        const timeDisplay = document.getElementById('time-display');
-        const timeLabel = document.getElementById('time-label');
-        const lcdLogo = document.getElementById('lcd-logo');
-        const fileInput = document.getElementById('file-input');
-        const drawerArea = document.getElementById('drawer-area');
-        const playBtn = document.getElementById('play-btn');
-
-        // Artwork Popup Elements
-        const artworkOverlay = document.getElementById('artwork-overlay');
-        const albumCover = document.getElementById('album-cover');
-        const artTitle = document.getElementById('art-title');
-        const artAlbum = document.getElementById('art-album');
-        const artArtist = document.getElementById('art-artist');
-        const artFormat = document.getElementById('art-format');
-        
         let isOn = true;
         let playlist = [];
         let currentIndex = 0;
         let showRemaining = false;
-        
-        // Cache pour les métadonnées de la piste courante
-        let currentMetadata = {
-            title: "", album: "", artist: "", format: "", cover: ""
-        };
+        let currentCover = "";
+
+        const trackTitle = document.getElementById('track-title');
+        const trackMeta = document.getElementById('track-meta');
+        const infoBlock = document.getElementById('track-info-block');
+        const lcdLogo = document.getElementById('lcd-logo');
+        const fileInput = document.getElementById('file-input');
+        const drawerArea = document.getElementById('drawer-area');
+        const playBtn = document.getElementById('play-btn');
+        const logoSlot = document.getElementById('logo-slot');
+        const menuBtn = document.getElementById('menu-btn');
 
         function formatNum(num) { return num.toString().padStart(2, '0'); }
         function formatTime(seconds) {
@@ -256,128 +194,93 @@
             return `${formatNum(mins)}:${formatNum(secs)}`;
         }
 
-        function readMetadata(file) {
-            const ext = file.name.split('.').pop().toUpperCase();
-            formatBadge.textContent = ext;
-            currentMetadata.format = ext;
-
-            jsmediatags.read(file, {
-                onSuccess: function(tag) {
-                    const t = tag.tags;
-                    currentMetadata.title = t.title || file.name.replace(/\.[^/.]+$/, "");
-                    currentMetadata.album = t.album || "UNKNOWN ALBUM";
-                    currentMetadata.artist = t.artist || "UNKNOWN ARTIST";
-                    
-                    trackTitle.textContent = currentMetadata.title;
-                    trackMeta.textContent = `${currentMetadata.album} — ${currentMetadata.artist}`;
-                    
-                    if (t.picture) {
-                        const { data, format } = t.picture;
-                        let base64String = "";
-                        for (let i = 0; i < data.length; i++) base64String += String.fromCharCode(data[i]);
-                        currentMetadata.cover = `data:${format};base64,${window.btoa(base64String)}`;
-                    } else {
-                        currentMetadata.cover = "https://via.placeholder.com/400/111111/d4af37?text=NO+COVER";
-                    }
-                },
-                onError: function() {
-                    currentMetadata.title = file.name.replace(/\.[^/.]+$/, "");
-                    currentMetadata.album = "N/A";
-                    currentMetadata.artist = "N/A";
-                    trackTitle.textContent = currentMetadata.title;
-                    trackMeta.textContent = "NO METADATA AVAILABLE";
-                    currentMetadata.cover = "https://via.placeholder.com/400/111111/d4af37?text=ERROR";
-                }
-            });
-        }
+        menuBtn.onclick = () => { if(isOn) { logoSlot.classList.toggle('open'); menuBtn.classList.toggle('btn-active'); } };
 
         function updateDisplay() {
             if (playlist.length > 0) {
-                lcdLogo.classList.add('hidden');
+                lcdLogo.style.display = 'none';
                 infoBlock.style.display = 'flex';
                 document.getElementById('time-container').style.opacity = "1";
                 document.getElementById('playlist-container').style.opacity = "1";
-                readMetadata(playlist[currentIndex]);
-                playlistStatus.textContent = `${formatNum(currentIndex + 1)}/${formatNum(playlist.length)}`;
+                document.getElementById('playlist-status').textContent = `${formatNum(currentIndex + 1)}/${formatNum(playlist.length)}`;
                 
-                if (audio.paused) {
-                    playBtn.classList.add('paused-blink');
-                } else {
-                    playBtn.classList.remove('paused-blink');
-                    playBtn.style.color = "var(--gold)";
-                }
-            } else {
-                if(isOn) lcdLogo.classList.remove('hidden');
-                infoBlock.style.display = 'none';
-                document.getElementById('time-container').style.opacity = "0";
-                document.getElementById('playlist-container').style.opacity = "0";
-                playBtn.classList.remove('paused-blink');
-                playBtn.style.color = "#777";
+                const file = playlist[currentIndex];
+                trackTitle.textContent = file.name.replace(/\.[^/.]+$/, "");
+                
+                // Read Tags for cover
+                jsmediatags.read(file, {
+                    onSuccess: (tag) => {
+                        const t = tag.tags;
+                        trackMeta.textContent = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"}`;
+                        if (t.picture) {
+                            const { data, format } = t.picture;
+                            let base = "";
+                            for (let i = 0; i < data.length; i++) base += String.fromCharCode(data[i]);
+                            currentCover = `data:${format};base64,${window.btoa(base)}`;
+                        } else { currentCover = "https://via.placeholder.com/400/111/d4af37?text=NO+COVER"; }
+                    }
+                });
+
+                if (audio.paused) playBtn.classList.add('paused-blink'); else playBtn.classList.remove('paused-blink');
+                playBtn.style.color = audio.paused ? "#777" : "var(--gold)";
             }
         }
 
-        // Action sur le titre pour ouvrir le Popup enrichi
-        trackTitle.onclick = () => {
-            if(playlist.length > 0) {
-                albumCover.src = currentMetadata.cover;
-                artTitle.textContent = currentMetadata.title;
-                artAlbum.textContent = currentMetadata.album;
-                artArtist.textContent = currentMetadata.artist;
-                artFormat.textContent = currentMetadata.format;
-                artworkOverlay.style.display = 'flex';
-            }
+        // TIME TOGGLE
+        document.getElementById('time-container').onclick = () => { showRemaining = !showRemaining; updateTime(); };
+
+        // PLAYLIST MODAL
+        document.getElementById('playlist-container').onclick = () => {
+            if(playlist.length === 0) return;
+            const container = document.getElementById('playlist-items');
+            container.innerHTML = '';
+            playlist.forEach((f, i) => {
+                const item = document.createElement('div');
+                item.className = `playlist-item ${i === currentIndex ? 'active' : ''}`;
+                item.textContent = `${formatNum(i+1)}. ${f.name}`;
+                item.onclick = () => { playTrack(i); document.getElementById('playlist-overlay').style.display = 'none'; };
+                container.appendChild(item);
+            });
+            document.getElementById('playlist-overlay').style.display = 'flex';
         };
 
-        document.getElementById('close-artwork').onclick = () => artworkOverlay.style.display = 'none';
-        artworkOverlay.onclick = (e) => { if(e.target === artworkOverlay) artworkOverlay.style.display = 'none'; };
+        // ARTWORK MODAL
+        trackTitle.onclick = () => {
+            document.getElementById('album-cover').src = currentCover;
+            document.getElementById('art-title').textContent = trackTitle.textContent;
+            document.getElementById('artwork-overlay').style.display = 'flex';
+        };
 
         function playTrack(index) {
             if (!isOn || index < 0 || index >= playlist.length) return;
             currentIndex = index;
             audio.src = URL.createObjectURL(playlist[currentIndex]);
-            audio.play().then(() => updateDisplay()).catch(e => console.error(e));
+            audio.play().then(() => updateDisplay());
         }
-
-        function updateTime() {
-            if (!audio.duration) return;
-            timeDisplay.textContent = showRemaining ? "-" + formatTime(audio.duration - audio.currentTime) : formatTime(audio.currentTime);
-            timeLabel.textContent = showRemaining ? "REMAIN" : "TIME";
-        }
-
-        function renderPlaylist() {
-            const items = document.getElementById('playlist-items');
-            items.innerHTML = '';
-            playlist.forEach((file, index) => {
-                const item = document.createElement('div');
-                item.style.padding = "12px"; item.style.borderBottom = "1px solid #222"; item.style.cursor = "pointer";
-                item.style.color = index === currentIndex ? "var(--gold)" : "#888"; item.style.fontSize = "11px";
-                item.textContent = `${index + 1}. ${file.name.toUpperCase()}`;
-                item.onclick = () => { playTrack(index); document.getElementById('playlist-overlay').style.display = 'none'; };
-                items.appendChild(item);
-            });
-        }
-
-        document.getElementById('playlist-container').onclick = () => { if(playlist.length > 0) { renderPlaylist(); document.getElementById('playlist-overlay').style.display = 'flex'; } };
-        document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
-        document.getElementById('time-container').onclick = () => { showRemaining = !showRemaining; updateTime(); };
-
-        document.getElementById('power-toggle').onclick = () => {
-            isOn = !isOn;
-            document.getElementById('power-led').classList.toggle('off');
-            if (!isOn) { audio.pause(); playlist = []; updateDisplay(); lcdLogo.classList.add('hidden'); drawerArea.classList.remove('open'); }
-            else { lcdLogo.classList.remove('hidden'); updateDisplay(); }
-        };
 
         document.getElementById('eject-btn').onclick = () => { if(isOn) drawerArea.classList.toggle('open'); if(drawerArea.classList.contains('open')) setTimeout(() => fileInput.click(), 600); };
         fileInput.onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); drawerArea.classList.remove('open'); playTrack(0); } };
         playBtn.onclick = () => { if (isOn && playlist.length > 0) { if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
         document.getElementById('next-btn').onclick = () => { if (isOn && currentIndex < playlist.length - 1) playTrack(currentIndex + 1); };
         document.getElementById('prev-btn').onclick = () => { if (isOn && currentIndex > 0) playTrack(currentIndex - 1); };
+        
+        function updateTime() {
+            if (!audio.duration) return;
+            document.getElementById('time-display').textContent = showRemaining ? "-" + formatTime(audio.duration - audio.currentTime) : formatTime(audio.currentTime);
+            document.getElementById('time-label').textContent = showRemaining ? "REMAIN" : "TIME";
+        }
 
         audio.addEventListener('timeupdate', updateTime);
         audio.addEventListener('ended', () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); });
-        audio.addEventListener('play', () => updateDisplay());
-        audio.addEventListener('pause', () => updateDisplay());
+        document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
+        document.getElementById('close-artwork').onclick = () => document.getElementById('artwork-overlay').style.display = 'none';
+
+        document.getElementById('power-toggle').onclick = () => {
+            isOn = !isOn;
+            document.getElementById('power-led').classList.toggle('off');
+            if (!isOn) { audio.pause(); lcdLogo.style.display = 'block'; infoBlock.style.display = 'none'; document.getElementById('time-container').style.opacity = "0"; document.getElementById('playlist-container').style.opacity = "0"; }
+            else if(playlist.length > 0) { updateDisplay(); }
+        };
     </script>
 </body>
 </html>
