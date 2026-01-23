@@ -58,6 +58,9 @@
         .lcd-label { display: block; font-size: 10px; color: #444; letter-spacing: 2px; font-weight: 900; margin-bottom: 4px; pointer-events: none; }
         .lcd-value { font-size: 20px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; pointer-events: none; }
         .brand-logo { height: 45px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
+        
+        #volume-display-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 14px; color: var(--gold); font-weight: 900; letter-spacing: 1px; display: none; z-index: 26; }
+        #mute-status-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #ff0000; font-weight: 900; letter-spacing: 2px; display: none; text-shadow: 0 0 8px rgba(255,0,0,0.6); z-index: 25; }
 
         .vu-meter-area { position: absolute; bottom: 0; left: 0; width: 100%; display: none; flex-direction: column; gap: 4px; padding-bottom: 12px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
         .vu-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0 20px; box-sizing: border-box; }
@@ -71,6 +74,7 @@
         .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; padding: 0 15px; box-sizing: border-box; opacity: 0.7; flex-wrap: wrap; align-content: center; }
         .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 10px 14px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 85px; text-align: center; text-transform: uppercase; -webkit-user-select: none; user-select: none; }
         .mini-btn:active { color: var(--gold); border-color: var(--gold); }
+        .btn-mini-active { color: var(--gold) !important; border-color: var(--gold) !important; text-shadow: 0 0 5px var(--gold); }
         .divider { width: 1px; height: 40px; background: #333; }
         .sliding-badge-plate { width: 100%; height: 100%; background: linear-gradient(135deg, rgba(45, 48, 52, 0.6) 0%, rgba(10, 11, 13, 0.85) 100%); backdrop-filter: blur(6px); display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.05); }
         .logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
@@ -93,6 +97,10 @@
 
             <div class="lcd-screen" id="main-lcd">
                 <div class="status-container" id="time-container" style="left:40px; text-align:left;"><span class="lcd-label">TIME</span><span class="lcd-value" id="time-display">00:00</span></div>
+                
+                <div id="mute-status-lcd">MUTE</div>
+                <div id="volume-display-lcd">VOL 100%</div>
+
                 <div class="status-container" id="playlist-container" style="right:40px; text-align:right;"><span class="lcd-label">TRACK</span><span class="lcd-value" id="playlist-status">00/00</span></div>
 
                 <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
@@ -118,7 +126,7 @@
 
         <div class="logo-slot-container" id="logo-slot">
             <div class="sub-controls-inner">
-                <button class="mini-btn">VOL -</button><button class="mini-btn">VOL +</button><button class="mini-btn">MUTE</button>
+                <button class="mini-btn" id="vol-dec">VOL -</button><button class="mini-btn" id="vol-inc">VOL +</button><button class="mini-btn" id="mute-btn">MUTE</button>
                 <div class="divider"></div>
                 <button class="mini-btn">BASS -</button><button class="mini-btn">BASS +</button>
                 <div class="divider"></div>
@@ -149,9 +157,9 @@
         const numSegments = 60;
         let vuSensitivity = 0.6;
         let vuVisible = true;
+        let volTimer;
 
         let scanInterval, holdTimer, isScanning = false;
-
         let audioCtx, source, analyserL, analyserR, splitter, isAudioInit = false;
 
         function initAudio() {
@@ -159,7 +167,8 @@
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             source = audioCtx.createMediaElementSource(audio);
             splitter = audioCtx.createChannelSplitter(2);
-            analyserL = audioCtx.createAnalyser(); analyserR = audioCtx.createAnalyser();
+            analyserL = audioCtx.createAnalyser(); 
+            analyserR = audioCtx.createAnalyser();
             analyserL.fftSize = 256; analyserR.fftSize = 256;
             source.connect(splitter); splitter.connect(analyserL, 0); splitter.connect(analyserR, 1);
             source.connect(audioCtx.destination); isAudioInit = true;
@@ -172,7 +181,7 @@
 
         function drawVU() {
             requestAnimationFrame(drawVU);
-            if (!isAudioInit || audio.paused || !vuVisible) { 
+            if (!isAudioInit || audio.paused || !vuVisible || audio.muted) { 
                 document.querySelectorAll('.segment').forEach(s => s.className = 'segment'); 
                 return; 
             }
@@ -193,6 +202,43 @@
             updateBar(vuLeft, getLevel(dataL)); updateBar(vuRight, getLevel(dataR));
         }
         drawVU();
+
+        // Volume Management
+        function showVolLCD() {
+            const display = document.getElementById('volume-display-lcd');
+            const muteDisplay = document.getElementById('mute-status-lcd');
+            if(audio.muted) return; // Priorité au MUTE
+            
+            display.textContent = `VOL ${Math.round(audio.volume * 100)}%`;
+            display.style.display = 'block';
+            
+            clearTimeout(volTimer);
+            volTimer = setTimeout(() => {
+                display.style.display = 'none';
+            }, 1000);
+        }
+
+        document.getElementById('vol-inc').onclick = () => { 
+            audio.muted = false; 
+            audio.volume = Math.min(1.0, audio.volume + 0.01); 
+            updateMuteDisplay();
+            showVolLCD();
+        };
+        document.getElementById('vol-dec').onclick = () => { 
+            audio.volume = Math.max(0, audio.volume - 0.01); 
+            showVolLCD();
+        };
+        document.getElementById('mute-btn').onclick = () => {
+            audio.muted = !audio.muted;
+            updateMuteDisplay();
+        };
+
+        function updateMuteDisplay() {
+            const isMuted = audio.muted;
+            document.getElementById('mute-btn').classList.toggle('btn-mini-active', isMuted);
+            document.getElementById('mute-status-lcd').style.display = isMuted ? 'block' : 'none';
+            if(isMuted) document.getElementById('volume-display-lcd').style.display = 'none';
+        }
 
         document.getElementById('vu-mode-btn').onclick = () => {
             vuVisible = !vuVisible;
@@ -246,27 +292,11 @@
         document.getElementById('eject-btn').onclick = () => { document.getElementById('drawer-area').classList.toggle('open'); if(document.getElementById('drawer-area').classList.contains('open')) setTimeout(() => document.getElementById('file-input').click(), 600); };
         document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); document.getElementById('drawer-area').classList.remove('open'); playTrack(0); } };
         
-        function playTrack(index) { 
-            initAudio(); 
-            currentIndex = index; 
-            audio.src = URL.createObjectURL(playlist[currentIndex]); 
-            audio.play().then(() => updateDisplay()); 
-        }
+        function playTrack(index) { initAudio(); currentIndex = index; audio.src = URL.createObjectURL(playlist[currentIndex]); audio.play().then(() => updateDisplay()); }
 
-        // Logic Auto-Next
-        audio.onended = () => {
-            if (currentIndex < playlist.length - 1) {
-                playTrack(currentIndex + 1);
-            } else {
-                updateDisplay(); // Pour rafraîchir l'icône Play/Pause
-            }
-        };
+        audio.onended = () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); else updateDisplay(); };
 
-        function startScan(direction) {
-            isScanning = true;
-            scanInterval = setInterval(() => { audio.currentTime += (direction * 2); }, 100);
-        }
-
+        function startScan(direction) { isScanning = true; scanInterval = setInterval(() => { audio.currentTime += (direction * 2); }, 100); }
         function stopScan() { clearInterval(scanInterval); isScanning = false; }
 
         function setupScanButton(id, direction, action) {
