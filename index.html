@@ -61,7 +61,7 @@
         .lcd-value { font-size: 20px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; pointer-events: none; }
         .brand-logo { height: 45px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
         
-        #volume-display-lcd, #vu-display-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 14px; color: var(--gold); font-weight: 900; letter-spacing: 1px; display: none; z-index: 26; white-space: nowrap; }
+        #volume-display-lcd, #vu-display-lcd, #tone-display-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 14px; color: var(--gold); font-weight: 900; letter-spacing: 1px; display: none; z-index: 26; white-space: nowrap; }
         
         .lcd-alerts { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; z-index: 25; }
         #mute-status-lcd { font-size: 12px; color: #ff0000; font-weight: 900; letter-spacing: 2px; display: none; text-shadow: 0 0 8px rgba(255,0,0,0.6); }
@@ -115,6 +115,7 @@
 
                 <div id="volume-display-lcd">VOL 5%</div>
                 <div id="vu-display-lcd">VU SENS 0.60</div>
+                <div id="tone-display-lcd">BASS +00</div>
 
                 <div class="status-container" id="playlist-container" style="right:40px; text-align:right;">
                     <span class="lcd-label">TRACK</span>
@@ -153,9 +154,9 @@
             <div class="sub-controls-inner">
                 <button class="mini-btn" id="vol-dec">VOL -</button><button class="mini-btn" id="vol-inc">VOL +</button><button class="mini-btn" id="mute-btn">MUTE</button>
                 <div class="divider"></div>
-                <button class="mini-btn">BASS -</button><button class="mini-btn">BASS +</button>
+                <button class="mini-btn" id="bass-dec">BASS -</button><button class="mini-btn" id="bass-inc">BASS +</button>
                 <div class="divider"></div>
-                <button class="mini-btn">TREB -</button><button class="mini-btn">TREB +</button>
+                <button class="mini-btn" id="treb-dec">TREB -</button><button class="mini-btn" id="treb-inc">TREB +</button>
                 <div class="divider"></div>
                 <button class="mini-btn" id="vu-dec">VU -</button>
                 <button class="mini-btn btn-mini-active" id="vu-mode-btn">VU MODE</button>
@@ -185,22 +186,41 @@
         let vuSensitivity = 0.6;
         let vuVisible = true;
         let isRandom = false;
-        let repeatMode = 0; // 0: Off, 1: Track, 2: All
-        let volTimer, vuTimer, volRepeatInterval, vuRepeatInterval;
+        let repeatMode = 0; 
+        let bassLevel = 0;
+        let trebLevel = 0;
+        let volTimer, vuTimer, toneTimer, volRepeatInterval, vuRepeatInterval, toneRepeatInterval;
 
         let scanInterval, holdTimer, isScanning = false;
-        let audioCtx, source, analyserL, analyserR, splitter, isAudioInit = false;
+        let audioCtx, source, analyserL, analyserR, splitter, bassFilter, trebFilter, isAudioInit = false;
 
         function initAudio() {
             if (isAudioInit) return;
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             source = audioCtx.createMediaElementSource(audio);
+            
+            bassFilter = audioCtx.createBiquadFilter();
+            bassFilter.type = "lowshelf";
+            bassFilter.frequency.value = 200;
+            bassFilter.gain.value = bassLevel;
+
+            trebFilter = audioCtx.createBiquadFilter();
+            trebFilter.type = "highshelf";
+            trebFilter.frequency.value = 3000;
+            trebFilter.gain.value = trebLevel;
+
             splitter = audioCtx.createChannelSplitter(2);
             analyserL = audioCtx.createAnalyser(); 
             analyserR = audioCtx.createAnalyser();
             analyserL.fftSize = 256; analyserR.fftSize = 256;
-            source.connect(splitter); splitter.connect(analyserL, 0); splitter.connect(analyserR, 1);
-            source.connect(audioCtx.destination); isAudioInit = true;
+
+            source.connect(bassFilter);
+            bassFilter.connect(trebFilter);
+            trebFilter.connect(splitter);
+            splitter.connect(analyserL, 0); 
+            splitter.connect(analyserR, 1);
+            trebFilter.connect(audioCtx.destination);
+            isAudioInit = true;
         }
 
         const vuLeft = document.getElementById('vu-left');
@@ -232,24 +252,41 @@
         }
         drawVU();
 
+        function clearCentralLCD() {
+            document.getElementById('volume-display-lcd').style.display = 'none';
+            document.getElementById('vu-display-lcd').style.display = 'none';
+            document.getElementById('tone-display-lcd').style.display = 'none';
+        }
+
         function showVolLCD() {
             if (document.getElementById('lcd-logo').style.display !== 'none' || audio.muted) return;
+            clearCentralLCD();
             const display = document.getElementById('volume-display-lcd');
             display.textContent = `VOL ${Math.round(audio.volume * 100)}%`;
             display.style.display = 'block';
-            document.getElementById('vu-display-lcd').style.display = 'none';
             clearTimeout(volTimer);
             volTimer = setTimeout(() => { display.style.display = 'none'; }, 1000);
         }
 
         function showVuLCD() {
             if (document.getElementById('lcd-logo').style.display !== 'none' || audio.muted) return;
+            clearCentralLCD();
             const display = document.getElementById('vu-display-lcd');
             display.textContent = `VU SENS ${vuSensitivity.toFixed(2)}`;
             display.style.display = 'block';
-            document.getElementById('volume-display-lcd').style.display = 'none';
             clearTimeout(vuTimer);
             vuTimer = setTimeout(() => { display.style.display = 'none'; }, 1000);
+        }
+
+        function showToneLCD(type, val) {
+            if (document.getElementById('lcd-logo').style.display !== 'none' || audio.muted) return;
+            clearCentralLCD();
+            const display = document.getElementById('tone-display-lcd');
+            const sign = val >= 0 ? "+" : "";
+            display.textContent = `${type} ${sign}${val.toString().padStart(2, '0')}`;
+            display.style.display = 'block';
+            clearTimeout(toneTimer);
+            toneTimer = setTimeout(() => { display.style.display = 'none'; }, 1000);
         }
 
         function changeVolume(delta) {
@@ -261,21 +298,15 @@
 
         function setupVolButton(id, delta) {
             const btn = document.getElementById(id);
-            const startRepeat = () => {
-                changeVolume(delta);
-                volRepeatInterval = setInterval(() => changeVolume(delta), 50);
-            };
+            const startRepeat = () => { changeVolume(delta); volRepeatInterval = setInterval(() => changeVolume(delta), 50); };
             const stopRepeat = () => { clearInterval(volRepeatInterval); };
             btn.onmousedown = (e) => { if(e.button === 0) startRepeat(); };
-            btn.onmouseup = stopRepeat;
-            btn.onmouseleave = stopRepeat;
+            btn.onmouseup = stopRepeat; btn.onmouseleave = stopRepeat;
             btn.ontouchstart = (e) => { e.preventDefault(); startRepeat(); };
             btn.ontouchend = stopRepeat;
             btn.onmouseenter = showVolLCD;
         }
-
-        setupVolButton('vol-inc', 0.01);
-        setupVolButton('vol-dec', -0.01);
+        setupVolButton('vol-inc', 0.01); setupVolButton('vol-dec', -0.01);
 
         function changeVUSensitivity(delta) {
             if(audio.muted) return;
@@ -285,21 +316,42 @@
 
         function setupVUButton(id, delta) {
             const btn = document.getElementById(id);
-            const startRepeat = () => {
-                changeVUSensitivity(delta);
-                vuRepeatInterval = setInterval(() => changeVUSensitivity(delta), 50);
-            };
+            const startRepeat = () => { changeVUSensitivity(delta); vuRepeatInterval = setInterval(() => changeVUSensitivity(delta), 50); };
             const stopRepeat = () => { clearInterval(vuRepeatInterval); };
             btn.onmousedown = (e) => { if(e.button === 0) startRepeat(); };
-            btn.onmouseup = stopRepeat;
-            btn.onmouseleave = stopRepeat;
+            btn.onmouseup = stopRepeat; btn.onmouseleave = stopRepeat;
             btn.ontouchstart = (e) => { e.preventDefault(); startRepeat(); };
             btn.ontouchend = stopRepeat;
             btn.onmouseenter = showVuLCD;
         }
+        setupVUButton('vu-inc', 0.05); setupVUButton('vu-dec', -0.05);
 
-        setupVUButton('vu-inc', 0.05);
-        setupVUButton('vu-dec', -0.05);
+        function changeTone(type, delta) {
+            if(audio.muted) return;
+            if (type === 'BASS') {
+                bassLevel = Math.max(-10, Math.min(10, bassLevel + delta));
+                if (bassFilter) bassFilter.gain.value = bassLevel;
+                showToneLCD('BASS', bassLevel);
+            } else {
+                trebLevel = Math.max(-10, Math.min(10, trebLevel + delta));
+                if (trebFilter) trebFilter.gain.value = trebLevel;
+                showToneLCD('TREB', trebLevel);
+            }
+        }
+
+        function setupToneButton(id, type, delta) {
+            const btn = document.getElementById(id);
+            const startRepeat = () => { changeTone(type, delta); toneRepeatInterval = setInterval(() => changeTone(type, delta), 150); };
+            const stopRepeat = () => { clearInterval(toneRepeatInterval); };
+            btn.onmousedown = (e) => { if(e.button === 0) startRepeat(); };
+            btn.onmouseup = stopRepeat; btn.onmouseleave = stopRepeat;
+            btn.ontouchstart = (e) => { e.preventDefault(); startRepeat(); };
+            btn.ontouchend = stopRepeat;
+            // Affiche le niveau au passage de la souris
+            btn.onmouseenter = () => showToneLCD(type, type === 'BASS' ? bassLevel : trebLevel);
+        }
+        setupToneButton('bass-inc', 'BASS', 1); setupToneButton('bass-dec', 'BASS', -1);
+        setupToneButton('treb-inc', 'TREB', 1); setupToneButton('treb-dec', 'TREB', -1);
 
         document.getElementById('mute-btn').onclick = () => {
             audio.muted = !audio.muted;
@@ -310,10 +362,7 @@
             const isMuted = audio.muted;
             document.getElementById('mute-btn').classList.toggle('btn-mini-active', isMuted);
             document.getElementById('mute-status-lcd').style.display = isMuted ? 'block' : 'none';
-            if(isMuted) {
-                document.getElementById('volume-display-lcd').style.display = 'none';
-                document.getElementById('vu-display-lcd').style.display = 'none';
-            }
+            if(isMuted) clearCentralLCD();
         }
 
         document.getElementById('random-btn').onclick = () => {
@@ -326,19 +375,9 @@
             repeatMode = (repeatMode + 1) % 3;
             const btn = document.getElementById('repeat-btn');
             const lcd = document.getElementById('repeat-status-lcd');
-            
-            if (repeatMode === 1) {
-                btn.classList.add('btn-mini-active');
-                lcd.style.display = 'block';
-                lcd.textContent = 'REPEAT 1';
-            } else if (repeatMode === 2) {
-                btn.classList.add('btn-mini-active');
-                lcd.style.display = 'block';
-                lcd.textContent = 'REPEAT ALL';
-            } else {
-                btn.classList.remove('btn-mini-active');
-                lcd.style.display = 'none';
-            }
+            if (repeatMode === 1) { btn.classList.add('btn-mini-active'); lcd.style.display = 'block'; lcd.textContent = 'REPEAT 1'; }
+            else if (repeatMode === 2) { btn.classList.add('btn-mini-active'); lcd.style.display = 'block'; lcd.textContent = 'REPEAT ALL'; }
+            else { btn.classList.remove('btn-mini-active'); lcd.style.display = 'none'; }
         };
 
         document.getElementById('vu-mode-btn').onclick = () => {
@@ -351,21 +390,15 @@
             if (playlist.length > 0) {
                 document.getElementById('lcd-logo').style.display = 'none'; 
                 document.getElementById('track-info-block').style.display = 'flex'; 
-                if(vuVisible) {
-                    document.getElementById('vu-area').style.display = 'flex';
-                    document.getElementById('vu-mode-btn').classList.add('btn-mini-active');
-                }
+                if(vuVisible) { document.getElementById('vu-area').style.display = 'flex'; document.getElementById('vu-mode-btn').classList.add('btn-mini-active'); }
                 document.getElementById('time-container').style.opacity = "1"; 
                 document.getElementById('playlist-container').style.opacity = "1";
                 document.getElementById('playlist-status').textContent = `${(currentIndex + 1).toString().padStart(2,'0')}/${playlist.length.toString().padStart(2,'0')}`;
                 
                 const file = playlist[currentIndex];
-                const fileName = file.name;
-                const extension = fileName.split('.').pop().toUpperCase();
-                
-                document.getElementById('track-title').textContent = fileName.replace(/\.[^/.]+$/, "");
+                document.getElementById('track-title').textContent = file.name.replace(/\.[^/.]+$/, "");
                 const formatBadge = document.getElementById('file-format-badge');
-                formatBadge.textContent = extension;
+                formatBadge.textContent = file.name.split('.').pop().toUpperCase();
                 formatBadge.style.display = 'inline-block';
 
                 jsmediatags.read(file, {
@@ -404,21 +437,13 @@
         function playTrack(index) { initAudio(); currentIndex = index; audio.src = URL.createObjectURL(playlist[currentIndex]); audio.play().then(() => updateDisplay()); }
 
         function nextTrack() {
-            if (repeatMode === 1) {
-                playTrack(currentIndex);
-                return;
-            }
+            if (repeatMode === 1) { playTrack(currentIndex); return; }
             if (isRandom && playlist.length > 1) {
-                let nextIdx;
-                do { nextIdx = Math.floor(Math.random() * playlist.length); } while (nextIdx === currentIndex);
+                let nextIdx; do { nextIdx = Math.floor(Math.random() * playlist.length); } while (nextIdx === currentIndex);
                 playTrack(nextIdx);
-            } else if (currentIndex < playlist.length - 1) {
-                playTrack(currentIndex + 1);
-            } else if (repeatMode === 2) {
-                playTrack(0);
-            } else {
-                updateDisplay();
-            }
+            } else if (currentIndex < playlist.length - 1) { playTrack(currentIndex + 1); }
+            else if (repeatMode === 2) { playTrack(0); }
+            else { updateDisplay(); }
         }
 
         audio.onended = nextTrack;
