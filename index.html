@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission 778CDT - Font Awesome Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #050505;
+            --chassis-gradient: linear-gradient(to bottom, #2c2e31 0%, #242629 50%, #1c1e21 100%);
+            --lcd-bg: #000000;
+            --lcd-text: #ffffff;
+            --gold: #d4af37;
+            --led-red: #ff1100;
+            --led-off: #330000;
+            --badge-bg: #080808;
+            --border-black: #000000;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .hi-fi-container {
+            background: var(--chassis-gradient);
+            width: 95%;
+            max-width: 1300px;
+            min-height: 650px; 
+            padding: 60px 50px 40px 50px;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1);
+            position: relative;
+            border-bottom: 10px solid #111;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .hi-fi-container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .disc-drawer-container {
+            width: 65%;
+            margin: 0 auto 50px;
+            padding: 3px; 
+            background-color: var(--border-black);
+            border-radius: 2px;
+            z-index: 2;
+        }
+
+        .disc-drawer-front {
+            height: 34px; 
+            background: var(--chassis-gradient);
+            border-radius: 1px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.1);
+        }
+
+        .interface-grid {
+            display: grid;
+            grid-template-columns: 150px 1fr 150px;
+            gap: 20px;
+            align-items: flex-start;
+            flex-grow: 1;
+            z-index: 2;
+        }
+
+        .lcd-screen {
+            background: var(--lcd-bg);
+            border: 1px solid #222;
+            padding: 40px;
+            text-align: center;
+            border-radius: 4px;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 40px rgba(255,255,255,0.02);
+            margin-bottom: 40px;
+        }
+
+        .brand-logo { 
+            height: 45px; 
+            width: auto; 
+            opacity: 0.85; 
+            filter: grayscale(1); 
+            transform: translateY(-3px); 
+        }
+
+        .track-info {
+            font-size: 16px;
+            margin-top: 20px;
+            color: #444;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+        }
+
+        /* Modernized Buttons with Font Awesome */
+        .btn-square {
+            background: linear-gradient(145deg, #3a3c3f, #1a1c1e);
+            border: 1px solid #000;
+            color: #777;
+            width: 60px;
+            height: 35px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 14px; /* Ajusté pour les icônes FA */
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.5);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .btn-square:active {
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8);
+            transform: translateY(1px);
+        }
+
+        .power-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .power-btn {
+            background: radial-gradient(circle, #444, #111);
+            border: 3px solid #000;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            color: #333;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+        }
+
+        .power-led {
+            width: 10px;
+            height: 10px;
+            background: var(--led-red);
+            border-radius: 50%;
+            margin: 25px auto 0;
+            box-shadow: 0 0 15px var(--led-red);
+        }
+
+        .power-led.off { background: var(--led-off); box-shadow: none; }
+
+        .unified-bottom-badge {
+            background-color: var(--badge-bg);
+            padding: 18px 50px;
+            border-radius: 12px;
+            border: 1px solid #1a1a1a;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2;
+            margin-top: 40px;
+        }
+
+        .badge-logo {
+            height: 22px;
+            width: auto;
+            filter: grayscale(1) brightness(1.5);
+        }
+
+        .model-label-text {
+            font-weight: 300;
+            font-size: 32px;
+            color: #fff;
+            letter-spacing: 3px;
+        }
+
+        .repeat-mode-label {
+            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+            font-size: 14px; font-weight: 900; color: var(--gold); 
+            display: none; z-index: 3;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div class="hi-fi-container">
+        <div class="repeat-mode-label" id="repeat-label">REPEAT</div>
+        
+        <div class="disc-drawer-container">
+            <div class="disc-drawer-front"></div>
+        </div>
+
+        <div class="interface-grid">
+            <div class="controls-left">
+                <button class="btn-square"><i class="fa-solid fa-bars"></i></button>
+                <button class="btn-square" id="eject-btn"><i class="fa-solid fa-eject"></i></button>
+                <button class="btn-square"><i class="fa-solid fa-layer-group"></i></button>
+            </div>
+
+            <div class="center-panel">
+                <div class="lcd-screen">
+                    <img src="img/mission_logo.png" alt="Mission" class="brand-logo" id="lcd-logo">
+                    <div class="track-info" id="track-info">READY TO PLAY</div>
+                </div>
+                
+                <div class="power-section">
+                    <button class="power-btn" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
+                    <div class="power-led" id="power-led"></div>
+                </div>
+            </div>
+
+            <div class="controls-right">
+                <button class="btn-square" id="play-btn"><i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i></button>
+                <button class="btn-square" id="prev-btn"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="btn-square" id="next-btn"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+        </div>
+
+        <div class="unified-bottom-badge">
+            <img src="img/mission_logo.png" alt="Mission" class="badge-logo">
+            <span class="model-label-text">778CDT</span>
+        </div>
+
+        <input type="file" id="file-input" accept=".flac" style="display:none">
+    </div>
+
+    <script>
+        const audio = new Audio();
+        const trackInfo = document.getElementById('track-info');
+        const fileInput = document.getElementById('file-input');
+        const powerLed = document.getElementById('power-led');
+        const playBtn = document.getElementById('play-btn');
+        const lcdLogo = document.getElementById('lcd-logo');
+        let isOn = true;
+
+        document.getElementById('power-toggle').addEventListener('click', () => {
+            isOn = !isOn;
+            powerLed.classList.toggle('off');
+            lcdLogo.style.opacity = isOn ? "0.85" : "0.05";
+            trackInfo.style.opacity = isOn ? "1" : "0";
+            if (!isOn) audio.pause();
+        });
+
+        document.getElementById('eject-btn').addEventListener('click', () => {
+            if(isOn) fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && isOn) {
+                const url = URL.createObjectURL(file);
+                audio.src = url;
+                trackInfo.textContent = file.name.replace('.flac', '').toUpperCase();
+                audio.play();
+                playBtn.style.color = "var(--gold)";
+            }
+        });
+
+        playBtn.addEventListener('click', () => {
+            if (!isOn || !audio.src) return;
+            if (audio.paused) {
+                audio.play();
+                playBtn.style.color = "var(--gold)";
+            } else {
+                audio.pause();
+                playBtn.style.color = "#777";
+            }
+        });
+
+        // Initialize persistent settings
+        localStorage.setItem('mission_config', JSON.stringify({theme: 'dark', lang: 'en'}));
+    </script>
+</body>
+</html>
