@@ -14,7 +14,6 @@
             --lcd-bg: #000000;
             --gold: #d4af37;
             --pure-white: #ffffff;
-            /* Glow removed as requested */
             --backlight: rgba(255, 255, 255, 0.7); 
             --vu-off: #0a0a0a;
             --font-modern: 'Funnel Sans', sans-serif;
@@ -51,7 +50,6 @@
         .controls-column { display: flex; flex-direction: column; gap: 30px; }
         .btn-square { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 45px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; transition: 0.2s; -webkit-user-select: none; user-select: none; }
         
-        /* White color only, no text-shadow */
         .btn-active, .btn-square:active { color: var(--pure-white) !important; }
 
         @keyframes pulse-white-static { 0%, 100% { color: #777; } 50% { color: #fff; } }
@@ -64,7 +62,11 @@
         .brand-logo { height: 45px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
         
         #volume-display-lcd, #vu-display-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 14px; color: var(--gold); font-weight: 900; letter-spacing: 1px; display: none; z-index: 26; white-space: nowrap; }
-        #mute-status-lcd { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #ff0000; font-weight: 900; letter-spacing: 2px; display: none; text-shadow: 0 0 8px rgba(255,0,0,0.6); z-index: 25; }
+        
+        .lcd-alerts { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; z-index: 25; }
+        #mute-status-lcd { font-size: 12px; color: #ff0000; font-weight: 900; letter-spacing: 2px; display: none; text-shadow: 0 0 8px rgba(255,0,0,0.6); }
+
+        #random-status-lcd { font-size: 10px; color: var(--pure-white); letter-spacing: 2px; font-weight: 900; display: none; margin-top: 4px; }
 
         .vu-meter-area { position: absolute; bottom: 0; left: 0; width: 100%; display: none; flex-direction: column; gap: 4px; padding-bottom: 12px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
         .vu-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0 20px; box-sizing: border-box; }
@@ -73,6 +75,8 @@
         .segment { flex-grow: 1; background: var(--vu-off); border-radius: 1px; }
         .segment.active-white { background: #fff; }
         .segment.active-red { background: #ff0000; }
+
+        #file-format-badge { font-size: 10px; border: 1px solid #fff; padding: 1px 4px; margin-left: 10px; border-radius: 2px; vertical-align: middle; color: #fff; font-weight: 800; }
 
         .logo-slot-container { width: 100%; height: 140px; border: 3px solid #000; border-radius: 4px; position: relative; overflow: hidden; background-color: #030303; margin-top: 20px; box-sizing: border-box; }
         .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; padding: 0 15px; box-sizing: border-box; opacity: 0.7; flex-wrap: wrap; align-content: center; }
@@ -105,16 +109,26 @@
             <div class="lcd-screen" id="main-lcd">
                 <div class="status-container" id="time-container" style="left:40px; text-align:left;"><span class="lcd-label">TIME</span><span class="lcd-value" id="time-display">00:00</span></div>
                 
-                <div id="mute-status-lcd">MUTE</div>
+                <div class="lcd-alerts">
+                    <div id="mute-status-lcd">MUTE</div>
+                </div>
+
                 <div id="volume-display-lcd">VOL 5%</div>
                 <div id="vu-display-lcd">VU SENS 0.60</div>
 
-                <div class="status-container" id="playlist-container" style="right:40px; text-align:right;"><span class="lcd-label">TRACK</span><span class="lcd-value" id="playlist-status">00/00</span></div>
+                <div class="status-container" id="playlist-container" style="right:40px; text-align:right;">
+                    <span class="lcd-label">TRACK</span>
+                    <span class="lcd-value" id="playlist-status">00/00</span>
+                    <div id="random-status-lcd">RANDOM</div>
+                </div>
 
                 <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
 
                 <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 8px; width:95%; z-index: 30;">
-                    <div id="track-title" style="font-size:24px; color:white; cursor:pointer; text-align:center; font-family: var(--font-modern); font-weight: 600; letter-spacing: 0px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;"></div>
+                    <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+                        <div id="track-title" style="font-size:24px; color:white; cursor:pointer; text-align:center; font-family: var(--font-modern); font-weight: 600; letter-spacing: 0px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;"></div>
+                        <span id="file-format-badge" style="display:none;"></span>
+                    </div>
                     <div id="track-meta" style="font-size:12px; color:rgba(255,255,255,0.5); text-transform:uppercase; font-family: var(--font-modern); font-weight: 400; letter-spacing: 2px;"></div>
                 </div>
 
@@ -144,7 +158,7 @@
                 <button class="mini-btn" id="vu-mode-btn">VU MODE</button>
                 <button class="mini-btn" id="vu-inc">VU +</button>
                 <div class="divider"></div>
-                <button class="mini-btn">REPEAT</button><button class="mini-btn">RANDOM</button>
+                <button class="mini-btn">REPEAT</button><button class="mini-btn" id="random-btn">RANDOM</button>
             </div>
             <div class="sliding-badge-plate">
                 <img src="img/Technics-Logo-org.png" alt="Technics" height="26">
@@ -167,6 +181,7 @@
         const numSegments = 60;
         let vuSensitivity = 0.6;
         let vuVisible = true;
+        let isRandom = false;
         let volTimer, vuTimer, volRepeatInterval, vuRepeatInterval;
 
         let scanInterval, holdTimer, isScanning = false;
@@ -214,9 +229,8 @@
         drawVU();
 
         function showVolLCD() {
-            if (document.getElementById('lcd-logo').style.display !== 'none') return;
+            if (document.getElementById('lcd-logo').style.display !== 'none' || audio.muted) return;
             const display = document.getElementById('volume-display-lcd');
-            if(audio.muted) return; 
             display.textContent = `VOL ${Math.round(audio.volume * 100)}%`;
             display.style.display = 'block';
             document.getElementById('vu-display-lcd').style.display = 'none';
@@ -225,7 +239,8 @@
         }
 
         function showVuLCD() {
-            if (document.getElementById('lcd-logo').style.display !== 'none') return;
+            // Priorité absolue à MUTE : ne rien afficher si muet
+            if (document.getElementById('lcd-logo').style.display !== 'none' || audio.muted) return;
             const display = document.getElementById('vu-display-lcd');
             display.textContent = `VU SENS ${vuSensitivity.toFixed(2)}`;
             display.style.display = 'block';
@@ -260,6 +275,8 @@
         setupVolButton('vol-dec', -0.01);
 
         function changeVUSensitivity(delta) {
+            // Empêche la modification/affichage si MUTE
+            if(audio.muted) return;
             vuSensitivity = Math.max(0.2, Math.min(3.0, vuSensitivity + delta));
             showVuLCD();
         }
@@ -291,8 +308,18 @@
             const isMuted = audio.muted;
             document.getElementById('mute-btn').classList.toggle('btn-mini-active', isMuted);
             document.getElementById('mute-status-lcd').style.display = isMuted ? 'block' : 'none';
-            if(isMuted) document.getElementById('volume-display-lcd').style.display = 'none';
+            // Cache les affichages temporaires si on vient d'activer le mute
+            if(isMuted) {
+                document.getElementById('volume-display-lcd').style.display = 'none';
+                document.getElementById('vu-display-lcd').style.display = 'none';
+            }
         }
+
+        document.getElementById('random-btn').onclick = () => {
+            isRandom = !isRandom;
+            document.getElementById('random-btn').classList.toggle('btn-mini-active', isRandom);
+            document.getElementById('random-status-lcd').style.display = isRandom ? 'block' : 'none';
+        };
 
         document.getElementById('vu-mode-btn').onclick = () => {
             vuVisible = !vuVisible;
@@ -310,7 +337,14 @@
                 document.getElementById('playlist-status').textContent = `${(currentIndex + 1).toString().padStart(2,'0')}/${playlist.length.toString().padStart(2,'0')}`;
                 
                 const file = playlist[currentIndex];
-                document.getElementById('track-title').textContent = file.name.replace(/\.[^/.]+$/, "");
+                const fileName = file.name;
+                const extension = fileName.split('.').pop().toUpperCase();
+                
+                document.getElementById('track-title').textContent = fileName.replace(/\.[^/.]+$/, "");
+                const formatBadge = document.getElementById('file-format-badge');
+                formatBadge.textContent = extension;
+                formatBadge.style.display = 'inline-block';
+
                 jsmediatags.read(file, {
                     onSuccess: (tag) => {
                         const t = tag.tags; document.getElementById('track-meta').textContent = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"}`;
@@ -347,7 +381,19 @@
         
         function playTrack(index) { initAudio(); currentIndex = index; audio.src = URL.createObjectURL(playlist[currentIndex]); audio.play().then(() => updateDisplay()); }
 
-        audio.onended = () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); else updateDisplay(); };
+        function nextTrack() {
+            if (isRandom && playlist.length > 1) {
+                let nextIdx;
+                do { nextIdx = Math.floor(Math.random() * playlist.length); } while (nextIdx === currentIndex);
+                playTrack(nextIdx);
+            } else if (currentIndex < playlist.length - 1) {
+                playTrack(currentIndex + 1);
+            } else {
+                updateDisplay();
+            }
+        }
+
+        audio.onended = nextTrack;
 
         function startScan(direction) { isScanning = true; scanInterval = setInterval(() => { audio.currentTime += (direction * 2); }, 100); }
         function stopScan() { clearInterval(scanInterval); isScanning = false; }
@@ -361,7 +407,7 @@
             btn.ontouchend = () => { clearTimeout(holdTimer); if (isScanning) stopScan(); else action(); };
         }
 
-        setupScanButton('next-btn', 1, () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); });
+        setupScanButton('next-btn', 1, nextTrack);
         setupScanButton('prev-btn', -1, () => { if (currentIndex > 0) playTrack(currentIndex - 1); });
 
         document.getElementById('power-toggle').onclick = () => location.reload();
