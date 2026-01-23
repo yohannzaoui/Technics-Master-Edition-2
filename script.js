@@ -8,6 +8,8 @@ let vuSensitivity = 0.6;
 let vuVisible = true;
 let isRandom = false;
 let repeatMode = 0; 
+let abPointA = null;
+let abPointB = null;
 let bassLevel = 0;
 let trebLevel = 0;
 let volTimer, vuTimer, toneTimer, volRepeatInterval, vuRepeatInterval, toneRepeatInterval;
@@ -180,9 +182,19 @@ document.getElementById('mute-btn').onclick = () => {
 
 function updateMuteDisplay() {
     const isMuted = audio.muted;
-    document.getElementById('mute-btn').classList.toggle('btn-mini-active', isMuted);
-    document.getElementById('mute-status-lcd').style.display = isMuted ? 'block' : 'none';
-    if(isMuted) clearCentralLCD();
+    const btn = document.getElementById('mute-btn');
+    const icon = document.getElementById('mute-icon');
+    const lcd = document.getElementById('mute-status-lcd');
+    
+    btn.classList.toggle('btn-mini-active', isMuted);
+    lcd.style.display = isMuted ? 'block' : 'none';
+    
+    if (isMuted) {
+        icon.className = 'fa-solid fa-volume-xmark';
+        clearCentralLCD();
+    } else {
+        icon.className = 'fa-solid fa-volume-high';
+    }
 }
 
 document.getElementById('random-btn').onclick = () => {
@@ -198,6 +210,39 @@ document.getElementById('repeat-btn').onclick = () => {
     if (repeatMode === 1) { btn.classList.add('btn-mini-active'); lcd.style.display = 'block'; lcd.textContent = 'REPEAT 1'; }
     else if (repeatMode === 2) { btn.classList.add('btn-mini-active'); lcd.style.display = 'block'; lcd.textContent = 'REPEAT ALL'; }
     else { btn.classList.remove('btn-mini-active'); lcd.style.display = 'none'; }
+};
+
+// A-B Loop Logic
+const abBtn = document.getElementById('ab-repeat-btn');
+const abLcd = document.getElementById('ab-status-lcd');
+
+function resetAB() {
+    abPointA = null; abPointB = null;
+    abBtn.classList.remove('btn-mini-active');
+    abBtn.textContent = "A-B";
+    abLcd.style.display = 'none';
+    abLcd.classList.remove('ab-blinking');
+}
+
+abBtn.onclick = () => {
+    if (playlist.length === 0) return;
+    if (abPointA === null) {
+        abPointA = audio.currentTime; 
+        abBtn.classList.add('btn-mini-active'); 
+        abBtn.textContent = "A-";
+        abLcd.style.display = 'block';
+        abLcd.classList.add('ab-blinking'); // Clignote pendant l'attente du point B
+    } else if (abPointB === null) {
+        if (audio.currentTime > abPointA) { 
+            abPointB = audio.currentTime; 
+            abBtn.textContent = "A-B";
+            abLcd.classList.remove('ab-blinking'); // Fixe une fois la boucle active
+        } else { 
+            resetAB(); 
+        }
+    } else { 
+        resetAB(); 
+    }
 };
 
 document.getElementById('vu-mode-btn').onclick = () => {
@@ -254,7 +299,7 @@ document.getElementById('play-btn').onclick = () => { if (playlist.length > 0) {
 document.getElementById('eject-btn').onclick = () => { document.getElementById('drawer-area').classList.toggle('open'); if(document.getElementById('drawer-area').classList.contains('open')) setTimeout(() => document.getElementById('file-input').click(), 600); };
 document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); document.getElementById('drawer-area').classList.remove('open'); playTrack(0); } };
 
-function playTrack(index) { initAudio(); currentIndex = index; audio.src = URL.createObjectURL(playlist[currentIndex]); audio.play().then(() => updateDisplay()); }
+function playTrack(index) { resetAB(); initAudio(); currentIndex = index; audio.src = URL.createObjectURL(playlist[currentIndex]); audio.play().then(() => updateDisplay()); }
 
 function nextTrack() {
     if (repeatMode === 1) { playTrack(currentIndex); return; }
@@ -290,6 +335,11 @@ function updateTime() {
     if (isNaN(time)) return;
     const sign = (showRemaining && time > 0) ? "-" : "";
     document.getElementById('time-display').textContent = sign + new Date(time * 1000).toISOString().substr(14, 5);
+    
+    // Check A-B Loop
+    if (abPointA !== null && abPointB !== null) {
+        if (audio.currentTime >= abPointB) audio.currentTime = abPointA;
+    }
 }
 
 audio.addEventListener('timeupdate', updateTime);

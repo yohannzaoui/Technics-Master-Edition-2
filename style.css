@@ -162,6 +162,10 @@ body {
 @keyframes pulse-white-static { 0%, 100% { color: #777; } 50% { color: #fff; } }
 .paused-blink { animation: pulse-white-static 1.5s infinite ease-in-out; }
 
+/* Animation pour le clignotement A-B sur LCD */
+@keyframes ab-blink-lcd { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.ab-blinking { animation: ab-blink-lcd 0.8s infinite; }
+
 .lcd-screen { 
     background: var(--lcd-bg); 
     border: 1px solid #222; 
@@ -242,7 +246,7 @@ body {
     text-shadow: 0 0 8px rgba(255,0,0,0.6); 
 }
 
-#random-status-lcd, #repeat-status-lcd { 
+#random-status-lcd, #repeat-status-lcd, #ab-status-lcd { 
     font-size: 10px; 
     color: var(--pure-white); 
     letter-spacing: 2px; 

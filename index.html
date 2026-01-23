@@ -53,6 +53,7 @@
                     <div style="display: flex; gap: 8px; justify-content: flex-end;">
                         <div id="repeat-status-lcd">REPEAT</div>
                         <div id="random-status-lcd">RANDOM</div>
+                        <div id="ab-status-lcd">A-B</div>
                     </div>
                 </div>
 
@@ -86,8 +87,11 @@
         <div class="logo-slot-container" id="logo-slot">
             <div class="sub-controls-inner">
                 <button class="mini-btn" id="vol-dec">VOL -</button>
+                <button class="mini-btn" id="mute-btn" style="min-width: 50px; padding: 10px 5px;">
+                    <i id="mute-icon" class="fa-solid fa-volume-high"></i>
+                </button>
                 <button class="mini-btn" id="vol-inc">VOL +</button>
-                <button class="mini-btn" id="mute-btn">MUTE</button>
+                
                 <div class="divider"></div>
                 <button class="mini-btn" id="bass-dec">BASS -</button>
                 <button class="mini-btn" id="bass-inc">BASS +</button>
@@ -95,11 +99,12 @@
                 <button class="mini-btn" id="treb-dec">TREB -</button>
                 <button class="mini-btn" id="treb-inc">TREB +</button>
                 <div class="divider"></div>
-                <button class="mini-btn" id="vu-dec">VU -</button>
-                <button class="mini-btn btn-mini-active" id="vu-mode-btn">VU MODE</button>
-                <button class="mini-btn" id="vu-inc">VU +</button>
+                <button class="mini-btn" id="vu-dec" style="min-width: 50px; padding: 10px 5px;">VU -</button>
+                <button class="mini-btn btn-mini-active" id="vu-mode-btn" style="min-width: 50px; padding: 10px 5px;">VU</button>
+                <button class="mini-btn" id="vu-inc" style="min-width: 50px; padding: 10px 5px;">VU +</button>
                 <div class="divider"></div>
                 <button class="mini-btn" id="repeat-btn">REPEAT</button>
+                <button class="mini-btn" id="ab-repeat-btn">A-B</button>
                 <button class="mini-btn" id="random-btn">RANDOM</button>
             </div>
             <div class="sliding-badge-plate">
