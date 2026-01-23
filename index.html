@@ -53,7 +53,6 @@
         .btn-square { background: linear-gradient(145deg, #3a3c3f, #1a1c1e); border: 1px solid #000; color: #777; height: 45px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 1.1em; transition: 0.2s; }
         .btn-active { color: var(--gold) !important; text-shadow: 0 0 5px var(--gold); }
 
-        /* ANIMATION CLIGNOTEMENT PAUSE */
         @keyframes pulse-yellow { 0%, 100% { color: #777; } 50% { color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.6); } }
         .paused-blink { animation: pulse-yellow 1.5s infinite ease-in-out; }
 
@@ -64,7 +63,7 @@
         .lcd-value { font-size: 20px; color: var(--gold); font-family: 'Courier New'; font-weight: bold; pointer-events: none; }
         .brand-logo { height: 45px; width: auto; filter: grayscale(1) brightness(1.2); opacity: 0.85; }
 
-        /* VU METER BORD BAS - MICHROMA POUR L ET R */
+        /* VU METER */
         .vu-meter-area { position: absolute; bottom: 0; left: 0; width: 100%; display: none; flex-direction: column; gap: 4px; padding-bottom: 12px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
         .vu-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 0 20px; box-sizing: border-box; }
         .vu-label { font-family: var(--font-modern); font-weight: 400; font-size: 10px; color: #bbb; width: 15px; text-align: center; }
@@ -73,11 +72,12 @@
         .segment.active-white { background: #fff; box-shadow: 0 0 4px rgba(255,255,255,0.4); }
         .segment.active-red { background: #ff0000; box-shadow: 0 0 8px rgba(255,0,0,0.7); }
 
-        /* TRAPPE */
+        /* TRAPPE - BOUTONS AGRANDIS */
         .logo-slot-container { width: 100%; height: 140px; border: 3px solid #000; border-radius: 4px; position: relative; overflow: hidden; background-color: #030303; margin-top: 20px; box-sizing: border-box; }
-        .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 12px; padding: 0 20px; box-sizing: border-box; opacity: 0.7; flex-wrap: wrap; align-content: center; }
-        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 6px 10px; font-size: 10px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 65px; text-align: center; text-transform: uppercase; }
-        .divider { width: 1px; height: 30px; background: #333; }
+        .sub-controls-inner { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; gap: 15px; padding: 0 15px; box-sizing: border-box; opacity: 0.7; flex-wrap: wrap; align-content: center; }
+        .mini-btn { background: #1a1a1a; border: 1px solid #333; color: var(--pure-white); padding: 10px 14px; font-size: 11px; font-weight: 800; cursor: pointer; border-radius: 3px; min-width: 85px; text-align: center; text-transform: uppercase; }
+        .mini-btn:active { color: var(--gold); border-color: var(--gold); }
+        .divider { width: 1px; height: 40px; background: #333; }
         .sliding-badge-plate { width: 100%; height: 100%; background: linear-gradient(135deg, rgba(45, 48, 52, 0.6) 0%, rgba(10, 11, 13, 0.85) 100%); backdrop-filter: blur(6px); display: flex; justify-content: space-between; align-items: center; padding: 0 100px; box-sizing: border-box; position: absolute; top: 0; left: 0; z-index: 10; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 1px 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.05); }
         .logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
     </style>
@@ -130,8 +130,11 @@
                 <div class="divider"></div>
                 <button class="mini-btn">TREB -</button><button class="mini-btn">TREB +</button>
                 <div class="divider"></div>
-                <button class="mini-btn">REPEAT</button><button class="mini-btn">RANDOM</button>
+                <button class="mini-btn" id="vu-dec">VU -</button>
                 <button class="mini-btn">VU MODE</button>
+                <button class="mini-btn" id="vu-inc">VU +</button>
+                <div class="divider"></div>
+                <button class="mini-btn">REPEAT</button><button class="mini-btn">RANDOM</button>
             </div>
             <div class="sliding-badge-plate">
                 <img src="img/Technics-Logo-org.png" alt="Technics" height="26">
@@ -150,6 +153,7 @@
         const audio = new Audio();
         let playlist = []; let currentIndex = 0; let showRemaining = false; let currentCover = "";
         const numSegments = 60;
+        let vuSensitivity = 1.1;
 
         let audioCtx, source, analyserL, analyserR, splitter, isAudioInit = false;
 
@@ -164,17 +168,8 @@
             source.connect(audioCtx.destination); isAudioInit = true;
         }
 
-        const trackTitle = document.getElementById('track-title');
-        const trackMeta = document.getElementById('track-meta');
-        const infoBlock = document.getElementById('track-info-block');
-        const lcdLogo = document.getElementById('lcd-logo');
-        const fileInput = document.getElementById('file-input');
-        const drawerArea = document.getElementById('drawer-area');
-        const playBtn = document.getElementById('play-btn');
-        const vuArea = document.getElementById('vu-area');
         const vuLeft = document.getElementById('vu-left');
         const vuRight = document.getElementById('vu-right');
-
         function createSegments(container) { for (let i = 0; i < numSegments; i++) { const seg = document.createElement('div'); seg.className = 'segment'; container.appendChild(seg); } }
         createSegments(vuLeft); createSegments(vuRight);
 
@@ -185,7 +180,7 @@
             analyserL.getByteFrequencyData(dataL); analyserR.getByteFrequencyData(dataR);
             const getLevel = (data) => { let sum = 0; for(let i=0; i<data.length; i++) sum += data[i]; return sum / data.length; };
             const updateBar = (container, avg) => {
-                const level = Math.min(numSegments, Math.floor((avg / 110) * numSegments));
+                const level = Math.min(numSegments, Math.floor((avg / 100) * numSegments * vuSensitivity));
                 const segments = container.children;
                 for (let i = 0; i < numSegments; i++) {
                     segments[i].className = 'segment';
@@ -199,16 +194,23 @@
         }
         drawVU();
 
+        document.getElementById('vu-inc').onclick = () => { vuSensitivity = Math.min(3.0, vuSensitivity + 0.2); };
+        document.getElementById('vu-dec').onclick = () => { vuSensitivity = Math.max(0.2, vuSensitivity - 0.2); };
+
         function updateDisplay() {
             if (playlist.length > 0) {
-                lcdLogo.style.display = 'none'; infoBlock.style.display = 'flex'; vuArea.style.display = 'flex';
-                document.getElementById('time-container').style.opacity = "1"; document.getElementById('playlist-container').style.opacity = "1";
+                document.getElementById('lcd-logo').style.display = 'none'; 
+                document.getElementById('track-info-block').style.display = 'flex'; 
+                document.getElementById('vu-area').style.display = 'flex';
+                document.getElementById('time-container').style.opacity = "1"; 
+                document.getElementById('playlist-container').style.opacity = "1";
                 document.getElementById('playlist-status').textContent = `${(currentIndex + 1).toString().padStart(2,'0')}/${playlist.length.toString().padStart(2,'0')}`;
+                
                 const file = playlist[currentIndex];
-                trackTitle.textContent = file.name.replace(/\.[^/.]+$/, "");
+                document.getElementById('track-title').textContent = file.name.replace(/\.[^/.]+$/, "");
                 jsmediatags.read(file, {
                     onSuccess: (tag) => {
-                        const t = tag.tags; trackMeta.textContent = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"}`;
+                        const t = tag.tags; document.getElementById('track-meta').textContent = `${t.artist || "UNKNOWN"} - ${t.album || "UNKNOWN"}`;
                         if (t.picture) {
                             const { data, format } = t.picture; let base = "";
                             for (let i = 0; i < data.length; i++) base += String.fromCharCode(data[i]);
@@ -216,13 +218,14 @@
                         } else { currentCover = ""; }
                     }
                 });
+                const playBtn = document.getElementById('play-btn');
                 if (audio.paused) playBtn.classList.add('paused-blink'); else playBtn.classList.remove('paused-blink');
                 playBtn.style.color = audio.paused ? "#777" : "var(--gold)";
             }
         }
 
         document.getElementById('time-container').onclick = () => { showRemaining = !showRemaining; updateTime(); };
-        trackTitle.onclick = () => { if(currentCover) { document.getElementById('album-cover').src = currentCover; document.getElementById('artwork-overlay').style.display = 'flex'; } };
+        document.getElementById('track-title').onclick = () => { if(currentCover) { document.getElementById('album-cover').src = currentCover; document.getElementById('artwork-overlay').style.display = 'flex'; } };
         document.getElementById('playlist-container').onclick = () => {
             const container = document.getElementById('playlist-items'); container.innerHTML = '';
             playlist.forEach((f, i) => {
@@ -234,9 +237,9 @@
             document.getElementById('playlist-overlay').style.display = 'flex';
         };
 
-        playBtn.onclick = () => { if (playlist.length > 0) { initAudio(); if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
-        document.getElementById('eject-btn').onclick = () => { drawerArea.classList.toggle('open'); if(drawerArea.classList.contains('open')) setTimeout(() => fileInput.click(), 600); };
-        fileInput.onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); drawerArea.classList.remove('open'); playTrack(0); } };
+        document.getElementById('play-btn').onclick = () => { if (playlist.length > 0) { initAudio(); if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
+        document.getElementById('eject-btn').onclick = () => { document.getElementById('drawer-area').classList.toggle('open'); if(document.getElementById('drawer-area').classList.contains('open')) setTimeout(() => document.getElementById('file-input').click(), 600); };
+        document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); document.getElementById('drawer-area').classList.remove('open'); playTrack(0); } };
         function playTrack(index) { initAudio(); currentIndex = index; audio.src = URL.createObjectURL(playlist[currentIndex]); audio.play().then(() => updateDisplay()); }
         document.getElementById('next-btn').onclick = () => { if (currentIndex < playlist.length - 1) playTrack(currentIndex + 1); };
         document.getElementById('prev-btn').onclick = () => { if (currentIndex > 0) playTrack(currentIndex - 1); };
