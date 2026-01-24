@@ -293,22 +293,25 @@ function updateDisplay() {
                 const album = t.album || "UNKNOWN";
                 document.getElementById('track-meta').textContent = `${artist} - ${album}`;
                 
+                const artworkLcd = document.getElementById('lcd-artwork');
                 if (t.picture) {
                     const { data, format } = t.picture; let base = "";
                     for (let i = 0; i < data.length; i++) base += String.fromCharCode(data[i]);
                     currentCover = `data:${format};base64,${window.btoa(base)}`;
-                    document.getElementById('lcd-artwork').src = currentCover;
-                    document.getElementById('lcd-artwork').style.display = 'block';
+                    artworkLcd.src = currentCover;
                 } else { 
-                    currentCover = ""; 
-                    document.getElementById('lcd-artwork').style.display = 'none';
+                    currentCover = "img/Technics_cover.png"; 
+                    artworkLcd.src = currentCover;
                 }
-                
+                artworkLcd.style.display = 'block';
                 updateMediaMetadata(title, artist, album, currentCover);
             },
             onError: () => {
-                document.getElementById('lcd-artwork').style.display = 'none';
-                updateMediaMetadata(title, "UNKNOWN", "UNKNOWN", "");
+                currentCover = "img/Technics_cover.png";
+                const artworkLcd = document.getElementById('lcd-artwork');
+                artworkLcd.src = currentCover;
+                artworkLcd.style.display = 'block';
+                updateMediaMetadata(title, "UNKNOWN", "UNKNOWN", currentCover);
             }
         });
         const playBtn = document.getElementById('play-btn');
