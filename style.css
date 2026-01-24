@@ -4,7 +4,7 @@
     --lcd-bg: #000000;
     --gold: #d4af37;
     --pure-white: #ffffff;
-    --backlight: rgba(255, 255, 255, 0.7); 
+    --backlight-color: rgba(255, 255, 255, 0.7); 
     --vu-off: #0a0a0a;
     --font-modern: 'Funnel Sans', sans-serif;
 }
@@ -23,8 +23,8 @@ body {
 
 .hi-fi-container {
     background: var(--chassis-gradient); 
-    width: 1500px; 
-    height: 720px; 
+    width: 1530px; 
+    height: 758px; 
     padding: 30px 90px; 
     border-radius: 4px; 
     position: relative; 
@@ -32,8 +32,28 @@ body {
     display: flex; 
     flex-direction: column; 
     box-sizing: border-box;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight);
+    /* Box shadow utilisant la variable pour le backlight */
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight-color);
 }
+
+.chassis-inscription {
+    position: absolute;
+    top: 35px;
+    right: 45px;
+    font-family: 'Pinyon Script', cursive;
+    font-size: 25px;
+    color: #b38f33;
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.9), 1px 1px 1px rgba(255, 255, 255, 0.15);
+    opacity: 0.85;
+    user-select: none;
+    pointer-events: none;
+}
+
+.color-swatch-input {
+    width: 100%; height: 40px; cursor: pointer; background: none; border: 1px solid #222; border-radius: 2px;
+}
+.color-swatch-input::-webkit-color-swatch-wrapper { padding: 0; }
+.color-swatch-input::-webkit-color-swatch { border: none; }
 
 .overlay { 
     position: absolute; 
@@ -169,7 +189,7 @@ body {
     background: var(--lcd-bg); 
     border: 1px solid #222; 
     border-radius: 4px; 
-    height: 280px; 
+    height: 435px; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
@@ -301,13 +321,13 @@ body {
 
 .logo-slot-container { 
     width: 100%; 
-    height: 140px; 
+    height: 168px; 
     border: 3px solid #000; 
     border-radius: 4px; 
     position: relative; 
     overflow: hidden; 
     background-color: #030303; 
-    margin-top: 20px; 
+    margin-top: 25px; 
     box-sizing: border-box; 
 }
 
@@ -364,3 +384,40 @@ body {
 }
 
 .logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
+
+/* Style des boutons numériques */
+.num-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #888;
+    width: 35px;
+    height: 28px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    border-radius: 2px;
+    font-family: var(--font-modern);
+    transition: 0.2s;
+}
+.num-btn:active { color: #fff; border-color: #555; }
+
+/* Correction affichage pochette album */
+#artwork-overlay .modal-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    border: none;
+    width: auto;
+    max-width: 90vw;
+}
+
+#album-cover {
+    max-width: 80vh;
+    max-height: 80vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border: 1px solid #333;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+}

@@ -1,3 +1,8 @@
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
+
+
 const jsmediatags = window.jsmediatags;
 const audio = new Audio();
 audio.volume = 0.05; 
@@ -16,6 +21,50 @@ let volTimer, vuTimer, toneTimer, volRepeatInterval, vuRepeatInterval, toneRepea
 
 let scanInterval, holdTimer, isScanning = false;
 let audioCtx, source, analyserL, analyserR, splitter, bassFilter, trebFilter, isAudioInit = false;
+
+// Theme Logic
+const bgColorBtn = document.getElementById('bg-color-btn');
+const colorOverlay = document.getElementById('color-picker-overlay');
+const bgColorInput = document.getElementById('bg-color-input');
+const auraColorInput = document.getElementById('aura-color-input');
+const resetThemeBtn = document.getElementById('reset-theme-btn');
+const chassis = document.getElementById('main-chassis');
+const lcdBgInput = document.getElementById('lcd-bg-input');
+const mainLcd = document.getElementById('main-lcd');
+
+// Load saved theme
+const savedBg = localStorage.getItem('technics-bg-color') || '#050505';
+const savedAura = localStorage.getItem('technics-aura-color') || 'rgba(255, 255, 255, 0.7)';
+document.body.style.backgroundColor = savedBg;
+bgColorInput.value = savedBg;
+document.documentElement.style.setProperty('--backlight-color', savedAura);
+// Convert RGB/RGBA to Hex for input value
+auraColorInput.value = savedAura.startsWith('rgba') ? '#ffffff' : savedAura;
+
+bgColorBtn.onclick = () => colorOverlay.style.display = 'flex';
+document.getElementById('close-color-picker').onclick = () => colorOverlay.style.display = 'none';
+
+bgColorInput.oninput = (e) => {
+    document.body.style.backgroundColor = e.target.value;
+    localStorage.setItem('technics-bg-color', e.target.value);
+};
+
+auraColorInput.oninput = (e) => {
+    const color = e.target.value;
+    // Add 0.7 alpha to the hex color
+    const rgba = color + 'b3'; 
+    document.documentElement.style.setProperty('--backlight-color', rgba);
+    localStorage.setItem('technics-aura-color', rgba);
+};
+
+resetThemeBtn.onclick = () => {
+    document.body.style.backgroundColor = '#050505';
+    document.documentElement.style.setProperty('--backlight-color', 'rgba(255, 255, 255, 0.7)');
+    bgColorInput.value = '#050505';
+    auraColorInput.value = '#ffffff';
+    localStorage.removeItem('technics-bg-color');
+    localStorage.removeItem('technics-aura-color');
+};
 
 // Media Session Setup
 function updateMediaMetadata(title, artist, album, artworkUrl) {
@@ -204,10 +253,8 @@ function updateMuteDisplay() {
     const btn = document.getElementById('mute-btn');
     const icon = document.getElementById('mute-icon');
     const lcd = document.getElementById('mute-status-lcd');
-    
     btn.classList.toggle('btn-mini-active', isMuted);
     lcd.style.display = isMuted ? 'block' : 'none';
-    
     if (isMuted) {
         icon.className = 'fa-solid fa-volume-xmark';
         clearCentralLCD();
@@ -231,7 +278,6 @@ document.getElementById('repeat-btn').onclick = () => {
     else { btn.classList.remove('btn-mini-active'); lcd.style.display = 'none'; }
 };
 
-// A-B Loop Logic
 const abBtn = document.getElementById('ab-repeat-btn');
 const abLcd = document.getElementById('ab-status-lcd');
 
@@ -256,12 +302,8 @@ abBtn.onclick = () => {
             abPointB = audio.currentTime; 
             abBtn.textContent = "A-B";
             abLcd.classList.remove('ab-blinking');
-        } else { 
-            resetAB(); 
-        }
-    } else { 
-        resetAB(); 
-    }
+        } else { resetAB(); }
+    } else { resetAB(); }
 };
 
 document.getElementById('vu-mode-btn').onclick = () => {
@@ -292,17 +334,25 @@ function updateDisplay() {
                 const artist = t.artist || "UNKNOWN";
                 const album = t.album || "UNKNOWN";
                 document.getElementById('track-meta').textContent = `${artist} - ${album}`;
-                
+                const artworkLcd = document.getElementById('lcd-artwork');
                 if (t.picture) {
                     const { data, format } = t.picture; let base = "";
                     for (let i = 0; i < data.length; i++) base += String.fromCharCode(data[i]);
                     currentCover = `data:${format};base64,${window.btoa(base)}`;
-                } else { currentCover = ""; }
-                
+                    artworkLcd.src = currentCover;
+                } else { 
+                    currentCover = "img/Technics_cover.png"; 
+                    artworkLcd.src = currentCover;
+                }
+                artworkLcd.style.display = 'block';
                 updateMediaMetadata(title, artist, album, currentCover);
             },
             onError: () => {
-                updateMediaMetadata(title, "UNKNOWN", "UNKNOWN", "");
+                currentCover = "img/Technics_cover.png";
+                const artworkLcd = document.getElementById('lcd-artwork');
+                artworkLcd.src = currentCover;
+                artworkLcd.style.display = 'block';
+                updateMediaMetadata(title, "UNKNOWN", "UNKNOWN", currentCover);
             }
         });
         const playBtn = document.getElementById('play-btn');
@@ -369,13 +419,112 @@ function updateTime() {
     if (isNaN(time)) return;
     const sign = (showRemaining && time > 0) ? "-" : "";
     document.getElementById('time-display').textContent = sign + new Date(time * 1000).toISOString().substr(14, 5);
-    
     if (abPointA !== null && abPointB !== null) {
         if (audio.currentTime >= abPointB) audio.currentTime = abPointA;
     }
 }
 
 audio.addEventListener('timeupdate', updateTime);
+
+window.onclick = (event) => {
+    if (event.target == colorOverlay) colorOverlay.style.display = 'none';
+    if (event.target == document.getElementById('artwork-overlay')) document.getElementById('artwork-overlay').style.display = 'none';
+    if (event.target == document.getElementById('playlist-overlay')) document.getElementById('playlist-overlay').style.display = 'none';
+};
 document.getElementById('close-artwork').onclick = () => document.getElementById('artwork-overlay').style.display = 'none';
 document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
 document.getElementById('menu-btn').onclick = () => { document.getElementById('logo-slot').classList.toggle('open'); document.getElementById('menu-btn').classList.toggle('btn-active'); };
+
+// Logique de sélection numérique
+let inputBuffer = "";
+let inputTimer = null;
+
+function pressNum(num) {
+    clearTimeout(inputTimer);
+    inputBuffer += num.toString();
+    
+    const display = document.getElementById('volume-display-lcd');
+    display.textContent = `SELECT: ${inputBuffer}`;
+    display.style.display = 'block';
+
+    inputTimer = setTimeout(() => {
+        const idx = parseInt(inputBuffer) - 1;
+        if (playlist && playlist[idx]) {
+            playTrack(idx);
+        } else {
+            display.textContent = "INVALID";
+        }
+        inputBuffer = "";
+        setTimeout(() => { if(inputBuffer === "") display.style.display = 'none'; }, 1000);
+    }, 1000);
+}
+
+// Reculer de 10 secondes
+document.getElementById('minus-10-btn').onclick = () => {
+    if (audio.src) {
+        audio.currentTime = Math.max(0, audio.currentTime - 10);
+    }
+};
+
+// Avancer de 10 secondes
+document.getElementById('plus-10-btn').onclick = () => {
+    if (audio.src) {
+        audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+    }
+};
+
+const savedLcdBg = localStorage.getItem('technics-lcd-bg') || '#000000';
+mainLcd.style.backgroundColor = savedLcdBg;
+lcdBgInput.value = savedLcdBg;
+
+// 3. Ajoute l'écouteur d'événement pour le changement de couleur
+lcdBgInput.oninput = (e) => {
+    const color = e.target.value;
+    mainLcd.style.backgroundColor = color;
+    localStorage.setItem('technics-lcd-bg', color);
+};
+
+// 4. Modifie ton bouton reset existant pour inclure le LCD
+const originalReset = resetThemeBtn.onclick;
+resetThemeBtn.onclick = () => {
+    if(originalReset) originalReset(); // Garde l'ancien reset
+    const defaultLcdColor = '#000000';
+    mainLcd.style.backgroundColor = defaultLcdColor;
+    lcdBgInput.value = defaultLcdColor;
+    localStorage.setItem('technics-lcd-bg', defaultLcdColor);
+};
+
+document.getElementById('tone-flat-btn').onclick = () => {
+    // Remise à zéro des variables
+    bassLevel = 0;
+    trebLevel = 0;
+
+    // Mise à jour des filtres Audio (si initialisés)
+    if (isAudioInit) {
+        bassFilter.gain.value = 0;
+        trebFilter.gain.value = 0;
+    }
+
+    // Affichage LCD temporaire
+    const toneDisplay = document.getElementById('tone-display-lcd');
+    toneDisplay.textContent = "TONE: FLAT";
+    toneDisplay.style.display = 'block';
+    
+    clearTimeout(toneTimer);
+    toneTimer = setTimeout(() => {
+        toneDisplay.style.display = 'none';
+    }, 2000);
+};
+
+document.getElementById('time-mode-btn').onclick = () => document.getElementById('time-container').click();
+
+// Correction du bouton PLAYLIST (LIST)
+const btnPlaylist = document.getElementById('playlist-btn');
+const playlistTrigger = document.getElementById('playlist-container'); // C'est lui qui contient l'événement de la playlist
+
+if (btnPlaylist && playlistTrigger) {
+    btnPlaylist.onclick = function() {
+        // On déclenche l'action exacte du conteneur de playlist
+        playlistTrigger.click();
+    };
+}

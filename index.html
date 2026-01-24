@@ -17,13 +17,15 @@
     <link rel="apple-touch-icon" href="img/favicon.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@300..800&family=Pinyon+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 </head>
 <body>
 
-    <div class="hi-fi-container">
+    <div class="hi-fi-container" id="main-chassis">
+        <div class="chassis-inscription">Master Audio Player</div>
+
         <div class="drawer-wrapper">
             <div class="power-btn-container">
                 <button class="power-btn btn-active" id="power-toggle"><i class="fa-solid fa-power-off"></i></button>
@@ -41,7 +43,7 @@
                 <button class="btn-square" id="eject-btn" style="width:100%"><i class="fa-solid fa-eject"></i></button>
                 <div style="display:flex; gap:15px;">
                     <button class="btn-square" id="menu-btn" style="width:50%"><i class="fa-solid fa-bars"></i></button>
-                    <button class="btn-square" style="width:50%"><i class="fa-solid fa-layer-group"></i></button>
+                    <button class="btn-square" id="bg-color-btn" style="width:50%"><i class="fa-solid fa-layer-group"></i></button>
                 </div>
             </div>
 
@@ -71,7 +73,9 @@
 
                 <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
 
-                <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 8px; width:95%; z-index: 30;">
+                <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 15px; width:95%; z-index: 30;">
+                    <img id="lcd-artwork" src="" style="width:200px; height:200px; object-fit:cover; border:1px solid #333; display:none; border-radius: 2px;">
+                    
                     <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
                         <div id="track-title" style="font-size:24px; color:white; cursor:pointer; text-align:center; font-family: var(--font-modern); font-weight: 600; letter-spacing: 0px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;"></div>
                         <span id="file-format-badge" style="display:none;"></span>
@@ -94,34 +98,82 @@
             </div>
         </div>
 
-        <div style="height: 100px;"></div>
-
         <div class="logo-slot-container" id="logo-slot">
-            <div class="sub-controls-inner">
-                <button class="mini-btn" id="vol-dec">VOL -</button>
-                <button class="mini-btn" id="mute-btn" style="min-width: 50px; padding: 10px 5px;">
-                    <i id="mute-icon" class="fa-solid fa-volume-high"></i>
-                </button>
-                <button class="mini-btn" id="vol-inc">VOL +</button>
-                
-                <div class="divider"></div>
-                <button class="mini-btn" id="bass-dec">BASS -</button>
-                <button class="mini-btn" id="bass-inc">BASS +</button>
-                <div class="divider"></div>
-                <button class="mini-btn" id="treb-dec">TREB -</button>
-                <button class="mini-btn" id="treb-inc">TREB +</button>
-                <div class="divider"></div>
-                <button class="mini-btn" id="vu-dec" style="min-width: 50px; padding: 10px 5px;">VU -</button>
-                <button class="mini-btn btn-mini-active" id="vu-mode-btn" style="min-width: 50px; padding: 10px 5px;">VU</button>
-                <button class="mini-btn" id="vu-inc" style="min-width: 50px; padding: 10px 5px;">VU +</button>
-                <div class="divider"></div>
-                <button class="mini-btn" id="repeat-btn">REPEAT</button>
-                <button class="mini-btn" id="ab-repeat-btn">A-B</button>
+            <div class="sub-controls-inner" style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+    <button class="num-btn" onclick="pressNum(1)">1</button>
+    <button class="num-btn" onclick="pressNum(2)">2</button>
+    <button class="num-btn" onclick="pressNum(3)">3</button>
+    <button class="num-btn" onclick="pressNum(4)">4</button>
+    <button class="num-btn" onclick="pressNum(5)">5</button>
+    <button class="num-btn" onclick="pressNum(6)">6</button>
+    <button class="num-btn" onclick="pressNum(7)">7</button>
+    <button class="num-btn" onclick="pressNum(8)">8</button>
+    <button class="num-btn" onclick="pressNum(9)">9</button>
+    <button class="num-btn" onclick="pressNum(0)">0</button>
+    <div class="divider" style="height: 25px; margin: 0 10px;"></div>
+    <button class="mini-btn" id="playlist-btn" style="font-size: 9px; height: 30px; width: 75px;">PLAYLIST</button>
+</div>
+    
+    <div style="display: flex; gap: 15px; align-items: center; justify-content: center;">
+        <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+        <button class="mini-btn" id="tone-flat-btn" style="position: absolute; top: -45px; width: 100%; font-size: 9px; height: 30px;">TONE : 0</button>
+        <button class="mini-btn" id="vol-dec">VOL -</button>
+    </div>
+        <button class="mini-btn" id="mute-btn" style="min-width: 50px; padding: 10px 5px;"><i id="mute-icon" class="fa-solid fa-volume-high"></i></button>
+        <button class="mini-btn" id="vol-inc">VOL +</button>
+        <div class="divider"></div>
+        <button class="mini-btn" id="bass-dec">BASS -</button>
+        <button class="mini-btn" id="bass-inc">BASS +</button>
+        <div class="divider"></div>
+        <button class="mini-btn" id="treb-dec">TREB -</button>
+        <button class="mini-btn" id="treb-inc">TREB +</button>
+        <div class="divider"></div>
+        <button class="mini-btn" id="vu-dec" style="min-width: 50px; padding: 10px 5px;">VU -</button>
+        <button class="mini-btn btn-mini-active" id="vu-mode-btn" style="min-width: 50px; padding: 10px 5px;">VU</button>
+        <button class="mini-btn" id="vu-inc" style="min-width: 50px; padding: 10px 5px;">VU +</button>
+        <div class="divider"></div>
+        <button class="mini-btn" id="minus-10-btn" style="min-width: 50px; padding: 10px 5px;">-10</button>
+        <button class="mini-btn" id="plus-10-btn" style="min-width: 50px; padding: 10px 5px;">+10</button>
+        <button class="mini-btn" id="repeat-btn">REPEAT</button>
+        <div style="display: flex; gap: 15px;">
+            <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+                <button class="mini-btn" id="ab-repeat-btn" style="min-width: 50px; padding: 10px 5px;">A-B</button>
+            </div>
+            <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+                <button class="mini-btn" id="time-mode-btn" style="position: absolute; top: -45px; width: 100%; font-size: 9px; height: 30px;">TIME</button>
                 <button class="mini-btn" id="random-btn">RANDOM</button>
             </div>
+        </div>
+    </div>
+</div>
             <div class="sliding-badge-plate">
                 <img src="img/Technics-Logo-org.png" alt="Technics" height="26">
                 <img src="img/HR_logo.png" alt="High-Res" height="50">
+            </div>
+        </div>
+
+        <div class="overlay" id="color-picker-overlay">
+            <div class="modal-content" style="width: 320px; padding: 30px; text-align: center;">
+                <span class="modal-close" id="close-color-picker">&times;</span>
+                <h3 style="margin-bottom: 20px; font-size: 11px; font-family: var(--font-modern); letter-spacing: 2px; color: #888;">CUSTOMIZE THEME</h3>
+                
+                <div style="margin-bottom: 20px;text-align: left;">
+                    <label style="display: block; font-size: 10px; margin-bottom: 8px; font-weight: 800; color: #555; letter-spacing: 1px;">WALLPAPER COLOR</label>
+                    <input type="color" id="bg-color-input" class="color-swatch-input">
+                </div>
+
+                <div style="margin-bottom: 20px; text-align: left;">
+                    <label style="display: block; font-size: 10px; color: #555; margin-bottom: 8px; font-weight: 800; letter-spacing: 1px;">LCD DISPLAY BACKGROUND</label>
+                    <input type="color" id="lcd-bg-input" class="color-swatch-input">
+                </div>
+
+                <div style="margin-bottom: 20px;text-align: left;">
+                    <label style="display: block; font-size: 10px; margin-bottom: 8px; font-weight: 800; color: #555; letter-spacing: 1px;">BACKLIGHT COLOR</label>
+                    <input type="color" id="aura-color-input" class="color-swatch-input">
+                </div>
+
+                <button class="mini-btn" id="reset-theme-btn" style="margin-top: 10px; width: 100%;">RESET DEFAULT</button>
             </div>
         </div>
 
