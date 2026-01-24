@@ -488,3 +488,25 @@ resetThemeBtn.onclick = () => {
     lcdBgInput.value = defaultLcdColor;
     localStorage.setItem('technics-lcd-bg', defaultLcdColor);
 };
+
+document.getElementById('tone-flat-btn').onclick = () => {
+    // Remise à zéro des variables
+    bassLevel = 0;
+    trebLevel = 0;
+
+    // Mise à jour des filtres Audio (si initialisés)
+    if (isAudioInit) {
+        bassFilter.gain.value = 0;
+        trebFilter.gain.value = 0;
+    }
+
+    // Affichage LCD temporaire
+    const toneDisplay = document.getElementById('tone-display-lcd');
+    toneDisplay.textContent = "TONE: FLAT";
+    toneDisplay.style.display = 'block';
+    
+    clearTimeout(toneTimer);
+    toneTimer = setTimeout(() => {
+        toneDisplay.style.display = 'none';
+    }, 2000);
+};
