@@ -451,3 +451,17 @@ function pressNum(num) {
         setTimeout(() => { if(inputBuffer === "") display.style.display = 'none'; }, 1000);
     }, 1000);
 }
+
+// Reculer de 10 secondes
+document.getElementById('minus-10-btn').onclick = () => {
+    if (audio.src) {
+        audio.currentTime = Math.max(0, audio.currentTime - 10);
+    }
+};
+
+// Avancer de 10 secondes
+document.getElementById('plus-10-btn').onclick = () => {
+    if (audio.src) {
+        audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+    }
+};
