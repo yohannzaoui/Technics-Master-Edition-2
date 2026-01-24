@@ -24,6 +24,8 @@ const bgColorInput = document.getElementById('bg-color-input');
 const auraColorInput = document.getElementById('aura-color-input');
 const resetThemeBtn = document.getElementById('reset-theme-btn');
 const chassis = document.getElementById('main-chassis');
+const lcdBgInput = document.getElementById('lcd-bg-input');
+const mainLcd = document.getElementById('main-lcd');
 
 // Load saved theme
 const savedBg = localStorage.getItem('technics-bg-color') || '#050505';
@@ -464,4 +466,25 @@ document.getElementById('plus-10-btn').onclick = () => {
     if (audio.src) {
         audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
     }
+};
+
+const savedLcdBg = localStorage.getItem('technics-lcd-bg') || '#000000';
+mainLcd.style.backgroundColor = savedLcdBg;
+lcdBgInput.value = savedLcdBg;
+
+// 3. Ajoute l'écouteur d'événement pour le changement de couleur
+lcdBgInput.oninput = (e) => {
+    const color = e.target.value;
+    mainLcd.style.backgroundColor = color;
+    localStorage.setItem('technics-lcd-bg', color);
+};
+
+// 4. Modifie ton bouton reset existant pour inclure le LCD
+const originalReset = resetThemeBtn.onclick;
+resetThemeBtn.onclick = () => {
+    if(originalReset) originalReset(); // Garde l'ancien reset
+    const defaultLcdColor = '#000000';
+    mainLcd.style.backgroundColor = defaultLcdColor;
+    lcdBgInput.value = defaultLcdColor;
+    localStorage.setItem('technics-lcd-bg', defaultLcdColor);
 };
