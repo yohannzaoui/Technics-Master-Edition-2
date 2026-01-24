@@ -297,11 +297,17 @@ function updateDisplay() {
                     const { data, format } = t.picture; let base = "";
                     for (let i = 0; i < data.length; i++) base += String.fromCharCode(data[i]);
                     currentCover = `data:${format};base64,${window.btoa(base)}`;
-                } else { currentCover = ""; }
+                    document.getElementById('lcd-artwork').src = currentCover;
+                    document.getElementById('lcd-artwork').style.display = 'block';
+                } else { 
+                    currentCover = ""; 
+                    document.getElementById('lcd-artwork').style.display = 'none';
+                }
                 
                 updateMediaMetadata(title, artist, album, currentCover);
             },
             onError: () => {
+                document.getElementById('lcd-artwork').style.display = 'none';
                 updateMediaMetadata(title, "UNKNOWN", "UNKNOWN", "");
             }
         });
