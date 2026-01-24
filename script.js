@@ -427,3 +427,27 @@ window.onclick = (event) => {
 document.getElementById('close-artwork').onclick = () => document.getElementById('artwork-overlay').style.display = 'none';
 document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
 document.getElementById('menu-btn').onclick = () => { document.getElementById('logo-slot').classList.toggle('open'); document.getElementById('menu-btn').classList.toggle('btn-active'); };
+
+// Logique de sélection numérique
+let inputBuffer = "";
+let inputTimer = null;
+
+function pressNum(num) {
+    clearTimeout(inputTimer);
+    inputBuffer += num.toString();
+    
+    const display = document.getElementById('volume-display-lcd');
+    display.textContent = `SELECT: ${inputBuffer}`;
+    display.style.display = 'block';
+
+    inputTimer = setTimeout(() => {
+        const idx = parseInt(inputBuffer) - 1;
+        if (playlist && playlist[idx]) {
+            playTrack(idx);
+        } else {
+            display.textContent = "INVALID";
+        }
+        inputBuffer = "";
+        setTimeout(() => { if(inputBuffer === "") display.style.display = 'none'; }, 1000);
+    }, 1000);
+}

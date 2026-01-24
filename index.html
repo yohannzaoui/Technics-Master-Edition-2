@@ -99,28 +99,42 @@
         </div>
 
         <div class="logo-slot-container" id="logo-slot">
-            <div class="sub-controls-inner">
-                <button class="mini-btn" id="vol-dec">VOL -</button>
-                <button class="mini-btn" id="mute-btn" style="min-width: 50px; padding: 10px 5px;">
-                    <i id="mute-icon" class="fa-solid fa-volume-high"></i>
-                </button>
-                <button class="mini-btn" id="vol-inc">VOL +</button>
-                
-                <div class="divider"></div>
-                <button class="mini-btn" id="bass-dec">BASS -</button>
-                <button class="mini-btn" id="bass-inc">BASS +</button>
-                <div class="divider"></div>
-                <button class="mini-btn" id="treb-dec">TREB -</button>
-                <button class="mini-btn" id="treb-inc">TREB +</button>
-                <div class="divider"></div>
-                <button class="mini-btn" id="vu-dec" style="min-width: 50px; padding: 10px 5px;">VU -</button>
-                <button class="mini-btn btn-mini-active" id="vu-mode-btn" style="min-width: 50px; padding: 10px 5px;">VU</button>
-                <button class="mini-btn" id="vu-inc" style="min-width: 50px; padding: 10px 5px;">VU +</button>
-                <div class="divider"></div>
-                <button class="mini-btn" id="repeat-btn">REPEAT</button>
-                <button class="mini-btn" id="ab-repeat-btn">A-B</button>
-                <button class="mini-btn" id="random-btn">RANDOM</button>
-            </div>
+            <div class="sub-controls-inner" style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; gap: 5px; justify-content: center;">
+        <button class="num-btn" onclick="pressNum(1)">1</button>
+        <button class="num-btn" onclick="pressNum(2)">2</button>
+        <button class="num-btn" onclick="pressNum(3)">3</button>
+        <button class="num-btn" onclick="pressNum(4)">4</button>
+        <button class="num-btn" onclick="pressNum(5)">5</button>
+        <button class="num-btn" onclick="pressNum(6)">6</button>
+        <button class="num-btn" onclick="pressNum(7)">7</button>
+        <button class="num-btn" onclick="pressNum(8)">8</button>
+        <button class="num-btn" onclick="pressNum(9)">9</button>
+        <button class="num-btn" onclick="pressNum(0)">0</button>
+    </div>
+    
+    <div style="display: flex; gap: 15px; align-items: center; justify-content: center;">
+        <button class="mini-btn" id="vol-dec">VOL -</button>
+        <button class="mini-btn" id="mute-btn" style="min-width: 50px; padding: 10px 5px;">
+            <i id="mute-icon" class="fa-solid fa-volume-high"></i>
+        </button>
+        <button class="mini-btn" id="vol-inc">VOL +</button>
+        <div class="divider"></div>
+        <button class="mini-btn" id="bass-dec">BASS -</button>
+        <button class="mini-btn" id="bass-inc">BASS +</button>
+        <div class="divider"></div>
+        <button class="mini-btn" id="treb-dec">TREB -</button>
+        <button class="mini-btn" id="treb-inc">TREB +</button>
+        <div class="divider"></div>
+        <button class="mini-btn" id="vu-dec" style="min-width: 50px; padding: 10px 5px;">VU -</button>
+        <button class="mini-btn btn-mini-active" id="vu-mode-btn" style="min-width: 50px; padding: 10px 5px;">VU</button>
+        <button class="mini-btn" id="vu-inc" style="min-width: 50px; padding: 10px 5px;">VU +</button>
+        <div class="divider"></div>
+        <button class="mini-btn" id="repeat-btn">REPEAT</button>
+        <button class="mini-btn" id="ab-repeat-btn">A-B</button>
+        <button class="mini-btn" id="random-btn">RANDOM</button>
+    </div>
+</div>
             <div class="sliding-badge-plate">
                 <img src="img/Technics-Logo-org.png" alt="Technics" height="26">
                 <img src="img/HR_logo.png" alt="High-Res" height="50">
