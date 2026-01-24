@@ -100,18 +100,20 @@
 
         <div class="logo-slot-container" id="logo-slot">
             <div class="sub-controls-inner" style="display: flex; flex-direction: column; gap: 10px;">
-    <div style="display: flex; gap: 5px; justify-content: center;">
-        <button class="num-btn" onclick="pressNum(1)">1</button>
-        <button class="num-btn" onclick="pressNum(2)">2</button>
-        <button class="num-btn" onclick="pressNum(3)">3</button>
-        <button class="num-btn" onclick="pressNum(4)">4</button>
-        <button class="num-btn" onclick="pressNum(5)">5</button>
-        <button class="num-btn" onclick="pressNum(6)">6</button>
-        <button class="num-btn" onclick="pressNum(7)">7</button>
-        <button class="num-btn" onclick="pressNum(8)">8</button>
-        <button class="num-btn" onclick="pressNum(9)">9</button>
-        <button class="num-btn" onclick="pressNum(0)">0</button>
-    </div>
+    <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+    <button class="num-btn" onclick="pressNum(1)">1</button>
+    <button class="num-btn" onclick="pressNum(2)">2</button>
+    <button class="num-btn" onclick="pressNum(3)">3</button>
+    <button class="num-btn" onclick="pressNum(4)">4</button>
+    <button class="num-btn" onclick="pressNum(5)">5</button>
+    <button class="num-btn" onclick="pressNum(6)">6</button>
+    <button class="num-btn" onclick="pressNum(7)">7</button>
+    <button class="num-btn" onclick="pressNum(8)">8</button>
+    <button class="num-btn" onclick="pressNum(9)">9</button>
+    <button class="num-btn" onclick="pressNum(0)">0</button>
+    <div class="divider" style="height: 25px; margin: 0 10px;"></div>
+    <button class="mini-btn" id="playlist-btn" style="font-size: 9px; height: 30px; width: 75px;">PLAYLIST</button>
+</div>
     
     <div style="display: flex; gap: 15px; align-items: center; justify-content: center;">
         <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
@@ -136,11 +138,10 @@
         <button class="mini-btn" id="repeat-btn">REPEAT</button>
         <div style="display: flex; gap: 15px;">
             <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
-                <button class="mini-btn" id="time-mode-btn" style="position: absolute; top: -45px; width: 100%; font-size: 9px; height: 30px;">TIME</button>
                 <button class="mini-btn" id="ab-repeat-btn" style="min-width: 50px; padding: 10px 5px;">A-B</button>
             </div>
             <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
-                <button class="mini-btn" id="playlist-btn" style="position: absolute; top: -45px; right: 0; width: 75px; font-size: 9px; height: 30px;">PLAYLIST</button>
+                <button class="mini-btn" id="time-mode-btn" style="position: absolute; top: -45px; width: 100%; font-size: 9px; height: 30px;">TIME</button>
                 <button class="mini-btn" id="random-btn">RANDOM</button>
             </div>
         </div>
