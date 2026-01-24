@@ -1,7 +1,7 @@
 {
-  "short_name": "Technics HiFi",
-  "name": "Technics Master HiFi",
-  "description": " - Technics Master HiFi - High-Fidelity Web Audio Player",
+  "short_name": "Technics Master Player",
+  "name": "Technics Master Audio Player",
+  "description": " - Technics Master Audio Player",
   "icons": [
     {
       "src": "img/favicon.png",
