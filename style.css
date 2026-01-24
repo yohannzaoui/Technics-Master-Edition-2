@@ -7,6 +7,7 @@
     --backlight-color: rgba(255, 255, 255, 0.7); 
     --vu-off: #0a0a0a;
     --design-line: #6b6b6b;
+    --lcd-label: #888888;
     --font-modern: 'Funnel Sans', sans-serif;
 }
 
@@ -243,7 +244,7 @@ body {
 .lcd-label { 
     display: block; 
     font-size: 10px; 
-    color: #444; 
+    color: var(--lcd-label); 
     letter-spacing: 2px; 
     font-weight: 900; 
     margin-bottom: 4px; 
