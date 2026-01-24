@@ -1,3 +1,8 @@
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
+
+
 const jsmediatags = window.jsmediatags;
 const audio = new Audio();
 audio.volume = 0.05; 
