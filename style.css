@@ -6,7 +6,7 @@
     --pure-white: #ffffff;
     --backlight-color: rgba(255, 255, 255, 0.7); 
     --vu-off: #0a0a0a;
-    --design-line: #a1792381;
+    --design-line: #5f4f1a;
     --font-modern: 'Funnel Sans', sans-serif;
 }
 
@@ -150,7 +150,7 @@ body {
     z-index: 5; 
 }
 
-.drawer-slot-area.open .disc-drawer-front { transform: translateY(100%); }
+.drawer-slot-area.open .disc-drawer-front { transform: translateY(95%); }
 .mash-logo-drawer { height: 35px; width: auto; opacity: 0.'85'; filter: brightness(0.6); }
 
 .interface-grid { 
@@ -201,8 +201,36 @@ body {
     width: 100%; 
     box-sizing: border-box; 
     overflow: hidden; 
-    box-shadow: 0 0 5px 2px #111, 0 0 3px 1px #3a3c3f;
+    /* Halo lumineux + Relief interne vitre */
+    box-shadow: 
+        0 0 10px 2px rgba(255, 255, 255, 0.25), /* Halo lumineux */
+        0 0 5px 2px #111,                       /* Ombre de contact */
+        0 0 3px 1px #3a3c3f,                    /* Arête métal */
+        inset 0 20px 30px rgba(201, 201, 201, 0.1), /* Reflet haut vitre */
+        inset 0 -20px 60px rgba(0, 0, 0, 0.9);      /* Profondeur bas vitre */
 }
+
+/* Le reflet "Glacé" (très visible) */
+/*.lcd-screen::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 45%;
+    
+    background: linear-gradient(
+        to bottom, 
+        rgba(255, 255, 255, 0.15) 0%, 
+        rgba(255, 255, 255, 0.05) 80%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 10;
+    
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}*/
+
 
 .status-container { 
     position: absolute; 
@@ -388,7 +416,7 @@ body {
     border: 1px solid rgba(255,255,255,0.05); 
 }
 
-.logo-slot-container.open .sliding-badge-plate { transform: translateY(100%); }
+.logo-slot-container.open .sliding-badge-plate { transform: translateY(95%); }
 
 /* Style des boutons numériques */
 .num-btn {
