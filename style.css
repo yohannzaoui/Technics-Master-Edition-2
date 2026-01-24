@@ -6,6 +6,7 @@
     --pure-white: #ffffff;
     --backlight-color: rgba(255, 255, 255, 0.7); 
     --vu-off: #0a0a0a;
+    --design-line: #696969;
     --font-modern: 'Funnel Sans', sans-serif;
 }
 
@@ -28,7 +29,7 @@ body {
     padding: 30px 90px; 
     border-radius: 5px; 
     position: relative; 
-    border-bottom: 15px solid #696969;
+    border-bottom: 15px solid var(--design-line);
     display: flex; 
     flex-direction: column; 
     box-sizing: border-box;
@@ -189,7 +190,7 @@ body {
 
 .lcd-screen { 
     background: var(--lcd-bg); 
-    border: 3px solid #696969; 
+    border: 3px solid var(--design-line); 
     border-radius: 6px; 
     height: 435px; 
     display: flex; 
