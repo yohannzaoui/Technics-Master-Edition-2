@@ -17,6 +17,48 @@ let volTimer, vuTimer, toneTimer, volRepeatInterval, vuRepeatInterval, toneRepea
 let scanInterval, holdTimer, isScanning = false;
 let audioCtx, source, analyserL, analyserR, splitter, bassFilter, trebFilter, isAudioInit = false;
 
+// Theme Logic
+const bgColorBtn = document.getElementById('bg-color-btn');
+const colorOverlay = document.getElementById('color-picker-overlay');
+const bgColorInput = document.getElementById('bg-color-input');
+const auraColorInput = document.getElementById('aura-color-input');
+const resetThemeBtn = document.getElementById('reset-theme-btn');
+const chassis = document.getElementById('main-chassis');
+
+// Load saved theme
+const savedBg = localStorage.getItem('technics-bg-color') || '#050505';
+const savedAura = localStorage.getItem('technics-aura-color') || 'rgba(255, 255, 255, 0.7)';
+document.body.style.backgroundColor = savedBg;
+bgColorInput.value = savedBg;
+document.documentElement.style.setProperty('--backlight-color', savedAura);
+// Convert RGB/RGBA to Hex for input value
+auraColorInput.value = savedAura.startsWith('rgba') ? '#ffffff' : savedAura;
+
+bgColorBtn.onclick = () => colorOverlay.style.display = 'flex';
+document.getElementById('close-color-picker').onclick = () => colorOverlay.style.display = 'none';
+
+bgColorInput.oninput = (e) => {
+    document.body.style.backgroundColor = e.target.value;
+    localStorage.setItem('technics-bg-color', e.target.value);
+};
+
+auraColorInput.oninput = (e) => {
+    const color = e.target.value;
+    // Add 0.7 alpha to the hex color
+    const rgba = color + 'b3'; 
+    document.documentElement.style.setProperty('--backlight-color', rgba);
+    localStorage.setItem('technics-aura-color', rgba);
+};
+
+resetThemeBtn.onclick = () => {
+    document.body.style.backgroundColor = '#050505';
+    document.documentElement.style.setProperty('--backlight-color', 'rgba(255, 255, 255, 0.7)');
+    bgColorInput.value = '#050505';
+    auraColorInput.value = '#ffffff';
+    localStorage.removeItem('technics-bg-color');
+    localStorage.removeItem('technics-aura-color');
+};
+
 // Media Session Setup
 function updateMediaMetadata(title, artist, album, artworkUrl) {
     if ('mediaSession' in navigator) {
@@ -204,10 +246,8 @@ function updateMuteDisplay() {
     const btn = document.getElementById('mute-btn');
     const icon = document.getElementById('mute-icon');
     const lcd = document.getElementById('mute-status-lcd');
-    
     btn.classList.toggle('btn-mini-active', isMuted);
     lcd.style.display = isMuted ? 'block' : 'none';
-    
     if (isMuted) {
         icon.className = 'fa-solid fa-volume-xmark';
         clearCentralLCD();
@@ -231,7 +271,6 @@ document.getElementById('repeat-btn').onclick = () => {
     else { btn.classList.remove('btn-mini-active'); lcd.style.display = 'none'; }
 };
 
-// A-B Loop Logic
 const abBtn = document.getElementById('ab-repeat-btn');
 const abLcd = document.getElementById('ab-status-lcd');
 
@@ -256,12 +295,8 @@ abBtn.onclick = () => {
             abPointB = audio.currentTime; 
             abBtn.textContent = "A-B";
             abLcd.classList.remove('ab-blinking');
-        } else { 
-            resetAB(); 
-        }
-    } else { 
-        resetAB(); 
-    }
+        } else { resetAB(); }
+    } else { resetAB(); }
 };
 
 document.getElementById('vu-mode-btn').onclick = () => {
@@ -292,7 +327,6 @@ function updateDisplay() {
                 const artist = t.artist || "UNKNOWN";
                 const album = t.album || "UNKNOWN";
                 document.getElementById('track-meta').textContent = `${artist} - ${album}`;
-                
                 const artworkLcd = document.getElementById('lcd-artwork');
                 if (t.picture) {
                     const { data, format } = t.picture; let base = "";
@@ -378,13 +412,18 @@ function updateTime() {
     if (isNaN(time)) return;
     const sign = (showRemaining && time > 0) ? "-" : "";
     document.getElementById('time-display').textContent = sign + new Date(time * 1000).toISOString().substr(14, 5);
-    
     if (abPointA !== null && abPointB !== null) {
         if (audio.currentTime >= abPointB) audio.currentTime = abPointA;
     }
 }
 
 audio.addEventListener('timeupdate', updateTime);
+
+window.onclick = (event) => {
+    if (event.target == colorOverlay) colorOverlay.style.display = 'none';
+    if (event.target == document.getElementById('artwork-overlay')) document.getElementById('artwork-overlay').style.display = 'none';
+    if (event.target == document.getElementById('playlist-overlay')) document.getElementById('playlist-overlay').style.display = 'none';
+};
 document.getElementById('close-artwork').onclick = () => document.getElementById('artwork-overlay').style.display = 'none';
 document.getElementById('close-playlist').onclick = () => document.getElementById('playlist-overlay').style.display = 'none';
 document.getElementById('menu-btn').onclick = () => { document.getElementById('logo-slot').classList.toggle('open'); document.getElementById('menu-btn').classList.toggle('btn-active'); };

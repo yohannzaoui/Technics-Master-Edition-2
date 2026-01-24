@@ -23,7 +23,7 @@
 </head>
 <body>
 
-    <div class="hi-fi-container">
+    <div class="hi-fi-container" id="main-chassis">
         <div class="chassis-inscription">Master Audio Player</div>
 
         <div class="drawer-wrapper">
@@ -43,7 +43,7 @@
                 <button class="btn-square" id="eject-btn" style="width:100%"><i class="fa-solid fa-eject"></i></button>
                 <div style="display:flex; gap:15px;">
                     <button class="btn-square" id="menu-btn" style="width:50%"><i class="fa-solid fa-bars"></i></button>
-                    <button class="btn-square" style="width:50%"><i class="fa-solid fa-layer-group"></i></button>
+                    <button class="btn-square" id="bg-color-btn" style="width:50%"><i class="fa-solid fa-layer-group"></i></button>
                 </div>
             </div>
 
@@ -124,6 +124,25 @@
             <div class="sliding-badge-plate">
                 <img src="img/Technics-Logo-org.png" alt="Technics" height="26">
                 <img src="img/HR_logo.png" alt="High-Res" height="50">
+            </div>
+        </div>
+
+        <div class="overlay" id="color-picker-overlay">
+            <div class="modal-content" style="width: 320px; padding: 30px; text-align: center;">
+                <span class="modal-close" id="close-color-picker">&times;</span>
+                <h3 style="margin-bottom: 20px; font-size: 11px; font-family: var(--font-modern); letter-spacing: 2px; color: #888;">CUSTOMIZE THEME</h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 10px; margin-bottom: 10px; color: #555; letter-spacing: 1px;">WALLPAPER COLOR</label>
+                    <input type="color" id="bg-color-input" class="color-swatch-input">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 10px; margin-bottom: 10px; color: #555; letter-spacing: 1px;">BACKLIGHT COLOR</label>
+                    <input type="color" id="aura-color-input" class="color-swatch-input">
+                </div>
+
+                <button class="mini-btn" id="reset-theme-btn" style="margin-top: 10px; width: 100%;">RESET DEFAULT</button>
             </div>
         </div>
 

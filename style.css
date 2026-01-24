@@ -4,7 +4,7 @@
     --lcd-bg: #000000;
     --gold: #d4af37;
     --pure-white: #ffffff;
-    --backlight: rgba(255, 255, 255, 0.7); 
+    --backlight-color: rgba(255, 255, 255, 0.7); 
     --vu-off: #0a0a0a;
     --font-modern: 'Funnel Sans', sans-serif;
 }
@@ -21,11 +21,10 @@ body {
     overflow: hidden; 
 }
 
-/* --- CHASSIS PRINCIPAL --- */
 .hi-fi-container {
     background: var(--chassis-gradient); 
-    width: 1530px; /* Largeur +30px */
-    height: 758px; /* Hauteur 758px */
+    width: 1530px; 
+    height: 758px; 
     padding: 30px 90px; 
     border-radius: 4px; 
     position: relative; 
@@ -33,27 +32,29 @@ body {
     display: flex; 
     flex-direction: column; 
     box-sizing: border-box;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight);
+    /* Box shadow utilisant la variable pour le backlight */
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight-color);
 }
 
-/* --- INSCRIPTION GRAVÉE (GOLD) --- */
 .chassis-inscription {
     position: absolute;
     top: 35px;
     right: 45px;
     font-family: 'Pinyon Script', cursive;
     font-size: 25px;
-    color: #b38f33; /* Couleur or vieilli */
-    /* Effet de gravure : ombre portée noire et reflet blanc sur les bords */
-    text-shadow: 
-        -1px -1px 1px rgba(0, 0, 0, 0.9), 
-        1px 1px 1px rgba(255, 255, 255, 0.15);
+    color: #b38f33;
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.9), 1px 1px 1px rgba(255, 255, 255, 0.15);
     opacity: 0.85;
     user-select: none;
     pointer-events: none;
 }
 
-/* --- MODALES & OVERLAYS --- */
+.color-swatch-input {
+    width: 100%; height: 40px; cursor: pointer; background: none; border: 1px solid #222; border-radius: 2px;
+}
+.color-swatch-input::-webkit-color-swatch-wrapper { padding: 0; }
+.color-swatch-input::-webkit-color-swatch { border: none; }
+
 .overlay { 
     position: absolute; 
     top: 0; left: 0; 
@@ -99,7 +100,6 @@ body {
 .playlist-item:hover { background: #1a1a1a; color: var(--gold); }
 .playlist-item.active { color: var(--pure-white); font-weight: bold; background: #080808; }
 
-/* --- SECTION TIROIR CD --- */
 .drawer-wrapper { 
     height: 130px; 
     display: grid; 
@@ -151,7 +151,6 @@ body {
 .drawer-slot-area.open .disc-drawer-front { transform: translateY(100%); }
 .mash-logo-drawer { height: 35px; width: auto; opacity: 0.85; filter: brightness(1.2); }
 
-/* --- INTERFACE CENTRALE --- */
 .interface-grid { 
     display: grid; 
     grid-template-columns: 180px 1fr 180px; 
@@ -186,7 +185,6 @@ body {
 @keyframes ab-blink-lcd { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 .ab-blinking { animation: ab-blink-lcd 0.8s infinite; }
 
-/* --- ÉCRAN LCD --- */
 .lcd-screen { 
     background: var(--lcd-bg); 
     border: 1px solid #222; 
@@ -276,7 +274,6 @@ body {
     margin-top: 4px; 
 }
 
-/* --- VU METERS --- */
 .vu-meter-area { 
     position: absolute; 
     bottom: 0; left: 0; 
@@ -322,10 +319,9 @@ body {
     font-weight: 800; 
 }
 
-/* --- TRAPPE INFÉRIEURE (168px) --- */
 .logo-slot-container { 
     width: 100%; 
-    height: 168px; /* Hauteur 168px */
+    height: 168px; 
     border: 3px solid #000; 
     border-radius: 4px; 
     position: relative; 
