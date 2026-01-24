@@ -510,3 +510,16 @@ document.getElementById('tone-flat-btn').onclick = () => {
         toneDisplay.style.display = 'none';
     }, 2000);
 };
+
+document.getElementById('time-mode-btn').onclick = () => document.getElementById('time-container').click();
+
+// Correction du bouton PLAYLIST (LIST)
+const btnPlaylist = document.getElementById('playlist-btn');
+const playlistTrigger = document.getElementById('playlist-container'); // C'est lui qui contient l'événement de la playlist
+
+if (btnPlaylist && playlistTrigger) {
+    btnPlaylist.onclick = function() {
+        // On déclenche l'action exacte du conteneur de playlist
+        playlistTrigger.click();
+    };
+}
