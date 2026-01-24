@@ -6,7 +6,7 @@
     --pure-white: #ffffff;
     --backlight-color: rgba(255, 255, 255, 0.7); 
     --vu-off: #0a0a0a;
-    --design-line: #696969;
+    --design-line: #a1792381;
     --font-modern: 'Funnel Sans', sans-serif;
 }
 
@@ -132,8 +132,8 @@ body {
 .drawer-slot-area { 
     width: 100%; height: 85px; 
     background-color: #000; 
-    border: 2px solid #111; 
-    border-radius: 2px; 
+    border: 3px solid #111; 
+    border-radius: 5px; 
     position: relative; 
     overflow: hidden; 
 }
@@ -151,7 +151,7 @@ body {
 }
 
 .drawer-slot-area.open .disc-drawer-front { transform: translateY(100%); }
-.mash-logo-drawer { height: 35px; width: auto; opacity: 0.85; filter: brightness(1.2); }
+.mash-logo-drawer { height: 35px; width: auto; opacity: 0.'85'; filter: brightness(0.6); }
 
 .interface-grid { 
     display: grid; 
