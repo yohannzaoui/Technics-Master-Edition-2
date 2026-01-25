@@ -354,10 +354,14 @@ function updateDisplay() {
                 updateMediaMetadata(title, "UNKNOWN", "UNKNOWN", currentCover);
             }
         });
-        const playBtn = document.getElementById('play-btn');
-        if (audio.paused) playBtn.classList.add('paused-blink'); else playBtn.classList.remove('paused-blink');
+       const playBtn = document.getElementById('play-btn');
+        if (audio.paused && audio.currentTime > 0) {
+            playBtn.classList.add('paused-blink');
+        } else {
+            playBtn.classList.remove('paused-blink');
+        }
         playBtn.style.color = audio.paused ? "#777" : "var(--pure-white)";
-    }
+    } // <-- Cette accolade ferme le "if (playlist.length > 0)"
 }
 
 document.getElementById('time-container').onclick = () => { showRemaining = !showRemaining; updateTime(); };
@@ -530,10 +534,19 @@ if (btnPlaylist && playlistTrigger) {
     };
 }
 
-document.getElementById('stop-btn').onclick = () => {
-    if (playlist.length > 0) {
-        audio.pause(); // Arrête le son
-        audio.currentTime = 0; // Remet au début de la piste
-        updateDisplay(); // Met à jour l'interface (clignotement du bouton play, etc.)
-    }
-};
+// Correction spécifique pour le bouton STOP
+const stopBtnAction = document.getElementById('stop-btn');
+if (stopBtnAction) {
+    stopBtnAction.onclick = () => {
+        if (playlist.length > 0) {
+            audio.pause(); 
+            audio.currentTime = 0; 
+            
+            const playBtn = document.getElementById('play-btn');
+            if (playBtn) playBtn.classList.remove('paused-blink');
+            
+            updateTime();
+            updateDisplay();
+        }
+    };
+}
