@@ -377,7 +377,18 @@ document.getElementById('playlist-container').onclick = () => {
     document.getElementById('playlist-overlay').style.display = 'flex';
 };
 
-document.getElementById('play-btn').onclick = () => { if (playlist.length > 0) { initAudio(); if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
+document.getElementById('play-btn').onclick = () => { 
+    if (playlist.length > 0) { 
+        // Éteindre la lumière du bouton STOP
+        const stopBtn = document.getElementById('stop-btn');
+        if (stopBtn) stopBtn.classList.remove('active-stop');
+
+        initAudio(); 
+        if (audio.paused) audio.play(); else audio.pause(); 
+        updateDisplay(); 
+    } 
+};
+
 document.getElementById('eject-btn').onclick = () => { document.getElementById('drawer-area').classList.toggle('open'); if(document.getElementById('drawer-area').classList.contains('open')) setTimeout(() => document.getElementById('file-input').click(), 600); };
 document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); document.getElementById('drawer-area').classList.remove('open'); playTrack(0); } };
 
@@ -534,19 +545,19 @@ if (btnPlaylist && playlistTrigger) {
     };
 }
 
-// Correction spécifique pour le bouton STOP
-const stopBtnAction = document.getElementById('stop-btn');
-if (stopBtnAction) {
-    stopBtnAction.onclick = () => {
-        if (playlist.length > 0) {
-            audio.pause(); 
-            audio.currentTime = 0; 
-            
-            const playBtn = document.getElementById('play-btn');
-            if (playBtn) playBtn.classList.remove('paused-blink');
-            
-            updateTime();
-            updateDisplay();
-        }
-    };
-}
+document.getElementById('stop-btn').onclick = () => {
+    if (playlist.length > 0) {
+        audio.pause(); 
+        audio.currentTime = 0; 
+        
+        // Allumer la lumière du bouton STOP
+        document.getElementById('stop-btn').classList.add('active-stop');
+        
+        // Retirer le clignotement du bouton PLAY
+        const playBtn = document.getElementById('play-btn');
+        if (playBtn) playBtn.classList.remove('paused-blink');
+        
+        updateTime();
+        updateDisplay();
+    }
+};
