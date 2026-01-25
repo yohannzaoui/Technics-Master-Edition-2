@@ -574,7 +574,7 @@ if (blackoutBtn && lcdMask) {
         if (lcdMask.style.display === 'none' || lcdMask.style.display === '') {
             lcdMask.style.display = 'block';
             blackoutBtn.style.color = "#FFFFFF"; // Devient blanc
-            blackoutBtn.style.textShadow = "0 0 10px #FFFFFF";
+            
             
             if (typeof mainLcd !== 'undefined') {
                 mainLcd.style.boxShadow = "none"; // Désactive le glow
@@ -583,7 +583,7 @@ if (blackoutBtn && lcdMask) {
         } else {
             lcdMask.style.display = 'none';
             blackoutBtn.style.color = ""; 
-            blackoutBtn.style.textShadow = "";
+            
             
             if (typeof mainLcd !== 'undefined') {
                 mainLcd.style.boxShadow = ""; // Réactive le glow
