@@ -466,26 +466,15 @@ body {
 }
 
 
-
-/* Le masque est caché par défaut */
-#lcd-mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    z-index: 10000;
-    pointer-events: none;
-    display: none; /* Caché au départ */
+/* Désactive totalement le glow blanc et assombrit la bordure */
+.blackout-effect {
+    box-shadow: none !important;
+    border-color: var(--design-line) !important;
 }
 
-/* La classe qui l'affiche */
-.show-blackout {
-    display: block !important;
-}
-
-#main-lcd {
-    position: relative !important;
-    overflow: hidden !important;
+/* Force le bouton en blanc brillant */
+.btn-active-white {
+    color: #FFFFFF !important;
+    border-color: #FFFFFF !important;
+    text-shadow: 0 0 10px #FFFFFF !important;
 }

@@ -563,18 +563,32 @@ document.getElementById('stop-btn').onclick = () => {
 };
 
 
-
+// --- FONCTION BLACKOUT (CORRIGÉE) ---
 const blackoutBtn = document.getElementById('blackout-btn');
 const lcdMask = document.getElementById('lcd-mask');
+// On n'utilise PAS 'const mainLcd' ici car elle est déjà déclarée ailleurs
 
 if (blackoutBtn && lcdMask) {
     blackoutBtn.onclick = () => {
+        // On utilise la variable mainLcd qui existe déjà dans ton code
         if (lcdMask.style.display === 'none' || lcdMask.style.display === '') {
             lcdMask.style.display = 'block';
-            blackoutBtn.style.color = "var(--pure-white)"; 
+            blackoutBtn.style.color = "#FFFFFF"; // Devient blanc
+            blackoutBtn.style.textShadow = "0 0 10px #FFFFFF";
+            
+            if (typeof mainLcd !== 'undefined') {
+                mainLcd.style.boxShadow = "none"; // Désactive le glow
+                mainLcd.style.borderColor = "var(--design-line)"; // Assombrit la bordure
+            }
         } else {
             lcdMask.style.display = 'none';
             blackoutBtn.style.color = ""; 
+            blackoutBtn.style.textShadow = "";
+            
+            if (typeof mainLcd !== 'undefined') {
+                mainLcd.style.boxShadow = ""; // Réactive le glow
+                mainLcd.style.borderColor = ""; 
+            }
         }
     };
 }
