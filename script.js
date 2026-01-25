@@ -578,7 +578,7 @@ if (blackoutBtn && lcdMask) {
             
             if (typeof mainLcd !== 'undefined') {
                 mainLcd.style.boxShadow = "none"; // Désactive le glow
-                mainLcd.style.borderColor = "var(--design-line)"; // Assombrit la bordure
+                mainLcd.style.borderColor = "var(--lcd-bg)"; // Assombrit la bordure
             }
         } else {
             lcdMask.style.display = 'none';
