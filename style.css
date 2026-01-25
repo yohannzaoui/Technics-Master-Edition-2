@@ -81,6 +81,9 @@ body {
     /* Pour compenser visuellement la police cursive qui descend souvent bas */
     line-height: 1;
     box-shadow: 0 0 5px 2px #111, 0 0 3px 1px #3a3c3f;
+    text-decoration: underline;
+    text-underline-offset: 2px; /* Règle la distance entre le texte et le trait */
+    text-decoration-thickness: 1px; /* Règle l'épaisseur du trait */
 }
 
 .color-swatch-input {
@@ -289,8 +292,8 @@ body {
 
 .lcd-value { 
     font-size: 20px; 
-    color: var(--gold); 
-    font-family: 'Courier New'; 
+    color: var(--design-line); 
+    font-family: 'Funnel Sans', sans-serif; 
     font-weight: bold; 
     pointer-events: none; 
 }
@@ -366,7 +369,7 @@ body {
     font-family: var(--font-modern); 
     font-weight: 700; 
     font-size: 12px; 
-    color: #bbb; 
+    color: rgb(204, 204, 204); 
     width: 15px; 
     text-align: center; 
 }
@@ -374,7 +377,7 @@ body {
 .vu-segments { display: flex; gap: 2px; flex-grow: 1; height: 8px; }
 
 .segment { flex-grow: 1; background: var(--vu-off); border-radius: 1px; }
-.segment.active-white { background: #fff; }
+.segment.active-white { background: rgb(204, 204, 204); }
 .segment.active-red { background: #ff0000; }
 
 #file-format-badge { 
