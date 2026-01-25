@@ -34,7 +34,6 @@ body {
     display: flex; 
     flex-direction: column; 
     box-sizing: border-box;
-    /* Box shadow utilisant la variable pour le backlight */
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight-color);
 }
 
@@ -53,6 +52,7 @@ body {
     border-radius: 5px;
     padding: 5px 5px;
     box-shadow: 0 0 5px 2px #111, 0 0 3px 1px #3a3c3f;
+    
 }
 
 .color-swatch-input {
