@@ -6,7 +6,7 @@
     --pure-white: #ffffff;
     --backlight-color: rgba(255, 255, 255, 0.7); 
     --vu-off: #0a0a0a;
-    --design-line: #6b6b6b;
+    --design-line: #78422c;
     --lcd-label: #888888;
     --font-modern: 'Funnel Sans', sans-serif;
 }
@@ -43,12 +43,16 @@ body {
     top: 35px;
     right: 45px;
     font-family: 'Pinyon Script', cursive;
-    font-size: 25px;
-    color: #b38f33;
-    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.9), 1px 1px 1px rgba(255, 255, 255, 0.15);
+    font-size: 35px;
+    color: var(--design-line);
+    text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.9), 1px 1px 1px rgba(0, 0, 0, 0.15);
     opacity: 0.85;
     user-select: none;
     pointer-events: none;
+    background-color: #000;
+    border-radius: 5px;
+    padding: 5px 5px;
+    box-shadow: 0 0 5px 2px #111, 0 0 3px 1px #3a3c3f;
 }
 
 .color-swatch-input {
