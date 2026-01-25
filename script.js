@@ -394,6 +394,19 @@ function prevTrack() {
     else if (repeatMode === 2) playTrack(playlist.length - 1);
 }
 
+const stopBtn = document.getElementById('stop-btn');
+if (stopBtn) {
+    stopBtn.onclick = () => {
+        if (playlist.length > 0) {
+            audio.pause(); 
+            audio.currentTime = 0; 
+            // On réinitialise l'affichage du temps et des boutons
+            updateTime();
+            updateDisplay();
+        }
+    };
+}
+
 audio.onended = nextTrack;
 
 function startScan(direction) { isScanning = true; scanInterval = setInterval(() => { audio.currentTime += (direction * 2); }, 100); }
@@ -516,3 +529,11 @@ if (btnPlaylist && playlistTrigger) {
         playlistTrigger.click();
     };
 }
+
+document.getElementById('stop-btn').onclick = () => {
+    if (playlist.length > 0) {
+        audio.pause(); // Arrête le son
+        audio.currentTime = 0; // Remet au début de la piste
+        updateDisplay(); // Met à jour l'interface (clignotement du bouton play, etc.)
+    }
+};
