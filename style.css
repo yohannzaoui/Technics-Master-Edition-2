@@ -406,12 +406,12 @@ body {
 
 #file-format-badge { 
     font-size: 10px; 
-    border: 1px solid #fff; 
+    border: 1px solid var(--lcd-label); 
     padding: 1px 4px; 
     margin-left: 10px; 
     border-radius: 2px; 
     vertical-align: middle; 
-    color: #fff; 
+    color: var(--lcd-label); 
     font-weight: 800; 
 }
 
