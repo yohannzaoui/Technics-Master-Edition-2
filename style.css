@@ -464,3 +464,28 @@ body {
 .active-stop {
     color: var(--pure-white) !important;
 }
+
+
+
+/* Le masque est caché par défaut */
+#lcd-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 10000;
+    pointer-events: none;
+    display: none; /* Caché au départ */
+}
+
+/* La classe qui l'affiche */
+.show-blackout {
+    display: block !important;
+}
+
+#main-lcd {
+    position: relative !important;
+    overflow: hidden !important;
+}

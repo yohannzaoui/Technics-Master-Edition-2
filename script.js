@@ -561,3 +561,20 @@ document.getElementById('stop-btn').onclick = () => {
         updateDisplay();
     }
 };
+
+
+
+const blackoutBtn = document.getElementById('blackout-btn');
+const lcdMask = document.getElementById('lcd-mask');
+
+if (blackoutBtn && lcdMask) {
+    blackoutBtn.onclick = () => {
+        if (lcdMask.style.display === 'none' || lcdMask.style.display === '') {
+            lcdMask.style.display = 'block';
+            blackoutBtn.style.color = "var(--pure-white)"; 
+        } else {
+            lcdMask.style.display = 'none';
+            blackoutBtn.style.color = ""; 
+        }
+    };
+}
