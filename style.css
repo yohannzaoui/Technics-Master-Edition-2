@@ -472,9 +472,3 @@ body {
     border-color: var(--design-line) !important;
 }
 
-/* Force le bouton en blanc brillant */
-.btn-active-white {
-    color: #FFFFFF !important;
-    border-color: #FFFFFF !important;
-    text-shadow: 0 0 10px #FFFFFF !important;
-}
