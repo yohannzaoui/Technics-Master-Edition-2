@@ -4,18 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Technics Master Audio Player</title>
-    
     <meta name="keywords" content="Technics, Hi-Fi, CD Player, Audio, Skeleton Edition, Web Audio API, Music Player, 778CDT">
-    
+    <meta name="author" content="Yohann Zaoui">
     <link rel="manifest" href="manifest.json">
-    
     <link rel="icon" type="image/png" href="img/favicon.png">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Technics Master Audio Player">
     <link rel="apple-touch-icon" href="img/favicon.png">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:wght@300..800&family=Pinyon+Script&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -90,7 +86,7 @@
                 <img src="img/Technics-Logo-org.png" alt="Technics" class="brand-logo" id="lcd-logo">
 
                 <div id="track-info-block" style="display: none; flex-direction: column; align-items: center; gap: 15px; width:95%; z-index: 30;">
-                    <img id="lcd-artwork" src="" style="width:200px; height:200px; object-fit:cover; border:1px solid #333; display:none; border-radius: 2px;">
+                    <img id="lcd-artwork" src="" style="width:200px; height:200px; object-fit:cover; border:1px solid #000000; display:none; border-radius: 5px;">
                     
                     <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
                         <div id="track-title" style="font-size:24px; color:rgb(204, 204, 204); cursor:pointer; text-align:center; font-family: var(--font-modern); font-weight: 600; letter-spacing: 0px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;"></div>
@@ -194,7 +190,7 @@
         <div class="overlay" id="artwork-overlay">
             <div class="modal-content" style="text-align:center; background:none; border:none;">
                 <span class="modal-close" id="close-artwork">&times;</span>
-                <img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #333;">
+                <img id="album-cover" src="" style="width:450px; height:450px; object-fit:cover; border:1px solid #000000;">
             </div>
         </div>
         
