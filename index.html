@@ -40,14 +40,30 @@
 
         <div class="interface-grid">
             <div class="controls-column">
-                <button class="btn-square" id="eject-btn" style="width:100%"><i class="fa-solid fa-eject"></i></button>
+
+
+                    <div style="display:flex; gap:15px;">
+
+                <button class="btn-square" id="eject-btn" style="width:50%"><i class="fa-solid fa-eject"></i></button>
+                <button class="btn-square" id="menu-btn" style="width:50%"><i class="fa-solid fa-bars"></i></button>
+            
+
+                </div>
+
+
                 <div style="display:flex; gap:15px;">
-                    <button class="btn-square" id="menu-btn" style="width:50%"><i class="fa-solid fa-bars"></i></button>
+                    
                     <button class="btn-square" id="bg-color-btn" style="width:50%"><i class="fa-solid fa-layer-group"></i></button>
+                    <button class="btn-square" id="blackout-btn" style="width:50%"><i class="fa-solid fa-eye-slash"></i></button>
                 </div>
             </div>
 
             <div class="lcd-screen" id="main-lcd">
+                
+
+                    <div id="lcd-mask" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: none; pointer-events: none;"></div>
+
+
                 <div class="status-container" id="time-container" style="left:40px; text-align:left;">
                     <span class="lcd-label">TIME</span>
                     <span class="lcd-value" id="time-display">00:00</span>
@@ -90,7 +106,10 @@
             </div>
 
             <div class="controls-column">
-                <button class="btn-square" id="play-btn" style="width:100%"><i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i></button>
+                <div style="display:flex; gap:15px;">
+                <button class="btn-square" id="play-btn" style="width:50%"><i class="fa-solid fa-play"></i>&nbsp;<i class="fa-solid fa-pause"></i></button>
+                <button class="btn-square" id="stop-btn" style="width:50%"><i class="fas fa-stop"></i></button>
+                </div>
                 <div style="display:flex; gap:15px;">
                     <button class="btn-square" id="prev-btn" style="width:50%"><i class="fa-solid fa-backward-step"></i></button>
                     <button class="btn-square" id="next-btn" style="width:50%"><i class="fa-solid fa-forward-step"></i></button>

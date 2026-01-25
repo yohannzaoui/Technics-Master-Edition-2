@@ -354,10 +354,14 @@ function updateDisplay() {
                 updateMediaMetadata(title, "UNKNOWN", "UNKNOWN", currentCover);
             }
         });
-        const playBtn = document.getElementById('play-btn');
-        if (audio.paused) playBtn.classList.add('paused-blink'); else playBtn.classList.remove('paused-blink');
+       const playBtn = document.getElementById('play-btn');
+        if (audio.paused && audio.currentTime > 0) {
+            playBtn.classList.add('paused-blink');
+        } else {
+            playBtn.classList.remove('paused-blink');
+        }
         playBtn.style.color = audio.paused ? "#777" : "var(--pure-white)";
-    }
+    } // <-- Cette accolade ferme le "if (playlist.length > 0)"
 }
 
 document.getElementById('time-container').onclick = () => { showRemaining = !showRemaining; updateTime(); };
@@ -373,7 +377,18 @@ document.getElementById('playlist-container').onclick = () => {
     document.getElementById('playlist-overlay').style.display = 'flex';
 };
 
-document.getElementById('play-btn').onclick = () => { if (playlist.length > 0) { initAudio(); if (audio.paused) audio.play(); else audio.pause(); updateDisplay(); } };
+document.getElementById('play-btn').onclick = () => { 
+    if (playlist.length > 0) { 
+        // Éteindre la lumière du bouton STOP
+        const stopBtn = document.getElementById('stop-btn');
+        if (stopBtn) stopBtn.classList.remove('active-stop');
+
+        initAudio(); 
+        if (audio.paused) audio.play(); else audio.pause(); 
+        updateDisplay(); 
+    } 
+};
+
 document.getElementById('eject-btn').onclick = () => { document.getElementById('drawer-area').classList.toggle('open'); if(document.getElementById('drawer-area').classList.contains('open')) setTimeout(() => document.getElementById('file-input').click(), 600); };
 document.getElementById('file-input').onchange = (e) => { if (e.target.files.length > 0) { playlist = Array.from(e.target.files); document.getElementById('drawer-area').classList.remove('open'); playTrack(0); } };
 
@@ -392,6 +407,19 @@ function nextTrack() {
 function prevTrack() {
     if (currentIndex > 0) playTrack(currentIndex - 1);
     else if (repeatMode === 2) playTrack(playlist.length - 1);
+}
+
+const stopBtn = document.getElementById('stop-btn');
+if (stopBtn) {
+    stopBtn.onclick = () => {
+        if (playlist.length > 0) {
+            audio.pause(); 
+            audio.currentTime = 0; 
+            // On réinitialise l'affichage du temps et des boutons
+            updateTime();
+            updateDisplay();
+        }
+    };
 }
 
 audio.onended = nextTrack;
@@ -514,5 +542,53 @@ if (btnPlaylist && playlistTrigger) {
     btnPlaylist.onclick = function() {
         // On déclenche l'action exacte du conteneur de playlist
         playlistTrigger.click();
+    };
+}
+
+document.getElementById('stop-btn').onclick = () => {
+    if (playlist.length > 0) {
+        audio.pause(); 
+        audio.currentTime = 0; 
+        
+        // Allumer la lumière du bouton STOP
+        document.getElementById('stop-btn').classList.add('active-stop');
+        
+        // Retirer le clignotement du bouton PLAY
+        const playBtn = document.getElementById('play-btn');
+        if (playBtn) playBtn.classList.remove('paused-blink');
+        
+        updateTime();
+        updateDisplay();
+    }
+};
+
+
+// --- FONCTION BLACKOUT (CORRIGÉE) ---
+const blackoutBtn = document.getElementById('blackout-btn');
+const lcdMask = document.getElementById('lcd-mask');
+// On n'utilise PAS 'const mainLcd' ici car elle est déjà déclarée ailleurs
+
+if (blackoutBtn && lcdMask) {
+    blackoutBtn.onclick = () => {
+        // On utilise la variable mainLcd qui existe déjà dans ton code
+        if (lcdMask.style.display === 'none' || lcdMask.style.display === '') {
+            lcdMask.style.display = 'block';
+            blackoutBtn.style.color = "#FFFFFF"; // Devient blanc
+            blackoutBtn.style.textShadow = "0 0 10px #FFFFFF";
+            
+            if (typeof mainLcd !== 'undefined') {
+                mainLcd.style.boxShadow = "none"; // Désactive le glow
+                mainLcd.style.borderColor = "var(--design-line)"; // Assombrit la bordure
+            }
+        } else {
+            lcdMask.style.display = 'none';
+            blackoutBtn.style.color = ""; 
+            blackoutBtn.style.textShadow = "";
+            
+            if (typeof mainLcd !== 'undefined') {
+                mainLcd.style.boxShadow = ""; // Réactive le glow
+                mainLcd.style.borderColor = ""; 
+            }
+        }
     };
 }
