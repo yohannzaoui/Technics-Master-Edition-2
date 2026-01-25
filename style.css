@@ -81,6 +81,9 @@ body {
     /* Pour compenser visuellement la police cursive qui descend souvent bas */
     line-height: 1;
     box-shadow: 0 0 5px 2px #111, 0 0 3px 1px #3a3c3f;
+    text-decoration: underline;
+    text-underline-offset: 2px; /* Règle la distance entre le texte et le trait */
+    text-decoration-thickness: 1px; /* Règle l'épaisseur du trait */
 }
 
 .color-swatch-input {
