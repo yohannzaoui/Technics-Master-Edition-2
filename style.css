@@ -30,11 +30,36 @@ body {
     padding: 30px 90px; 
     border-radius: 5px; 
     position: relative; 
-    border-bottom: 15px solid var(--design-line);
     display: flex; 
     flex-direction: column; 
     box-sizing: border-box;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,1), 0 -50px 200px var(--backlight-color);
+
+    /* --- EFFET DE PROFONDEUR SUR LA BASE --- */
+    /* On remplace la bordure simple par une bordure avec un dégradé pour simuler l'angle du métal */
+    border-bottom: 15px solid var(--design-line); 
+    
+    box-shadow: 
+        inset 0 1px 0 rgba(255,255,255,0.1), /* Reflet arête haute */
+        inset 0 -1px 0 rgba(255,255,255,0.2), /* Ligne de lumière sur l'angle bas */
+        0 2px 0 #3a3c3f,                       /* Arête métallique brillante */
+        0 10px 20px rgba(0,0,0,0.8),           /* Ombre portée directe sous le châssis */
+        0 40px 100px rgba(0,0,0,1),            /* Grande ombre d'occlusion */
+        0 -50px 200px var(--backlight-color);  /* Votre rétroéclairage existant */
+}
+
+/* Ajout d'un biseau réaliste sur la bordure basse */
+.hi-fi-container::after {
+    content: "";
+    position: absolute;
+    bottom: -15px; /* Épaisseur de votre border-bottom */
+    left: 0;
+    width: 100%;
+    height: 15px;
+    background: linear-gradient(to bottom, 
+        rgba(255,255,255,0.05) 0%, 
+        transparent 50%, 
+        rgba(138, 138, 138, 0.3) 100%);
+    pointer-events: none;
 }
 
 .chassis-inscription {
@@ -50,9 +75,12 @@ body {
     pointer-events: none;
     background-color: #000;
     border-radius: 5px;
-    padding: 5px 5px;
+    /* --- MODIFICATION ICI --- */
+    /* 5px en haut, 5px à droite, 0px en bas, 5px à gauche */
+    padding: 5px 5px 0px 5px; 
+    /* Pour compenser visuellement la police cursive qui descend souvent bas */
+    line-height: 1;
     box-shadow: 0 0 5px 2px #111, 0 0 3px 1px #3a3c3f;
-    
 }
 
 .color-swatch-input {
