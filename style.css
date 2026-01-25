@@ -383,11 +383,26 @@ body {
     text-align: center; 
 }
 
-.vu-segments { display: flex; gap: 2px; flex-grow: 1; height: 8px; }
+.vu-segments { 
+    display: flex; 
+    gap: 2px; 
+    flex-grow: 1; 
+    height: 8px; 
+}
 
-.segment { flex-grow: 1; background: var(--vu-off); border-radius: 1px; }
-.segment.active-white { background: rgb(204, 204, 204); }
-.segment.active-red { background: #ff0000; }
+.segment { 
+    flex-grow: 1; 
+    background: var(--vu-off); 
+    border-radius: 1px; 
+}
+
+.segment.active-white { 
+    background: rgb(204, 204, 204); 
+}
+
+.segment.active-red { 
+    background: #ff0000; 
+}
 
 #file-format-badge { 
     font-size: 10px; 
@@ -444,9 +459,16 @@ body {
     box-shadow: 0 0 5px 2px #111, 0 0 3px 1px #3a3c3f;
 }
 
-.mini-btn:active, .btn-mini-active { color: var(--pure-white) !important; border-color: #555 !important; }
+.mini-btn:active, .btn-mini-active { 
+    color: var(--pure-white) !important; 
+    border-color: #555 !important; 
+}
 
-.divider { width: 1px; height: 40px; background: #333; }
+.divider { 
+    width: 1px; 
+    height: 40px; 
+    background: #333; 
+}
 
 .sliding-badge-plate { 
     width: 100%; height: 100%; 
@@ -482,7 +504,10 @@ body {
     transition: 0.2s;
     box-shadow: 0 0 5px 2px #111, 0 0 3px 1px #3a3c3f;
 }
-.num-btn:active { color: #fff; border-color: #555; }
+.num-btn:active { 
+    color: #fff; 
+    border-color: #555; 
+}
 
 /* Correction affichage pochette album */
 #artwork-overlay .modal-content {
@@ -510,9 +535,4 @@ body {
 }
 
 
-/* Désactive totalement le glow blanc et assombrit la bordure */
-.blackout-effect {
-    box-shadow: none !important;
-    border-color: var(--design-line) !important;
-}
 
