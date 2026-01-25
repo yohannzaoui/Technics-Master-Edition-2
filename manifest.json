@@ -1,7 +1,7 @@
 {
-  "short_name": "Technics Master Audio Player",
-  "name": "Technics Master Audio Player",
-  "description": " - Technics Master Audio Player",
+  "short_name": "Technics ME II",
+  "name": "Technics Master Edition II",
+  "description": "Technics Master Edition II,
   "icons": [
     {
       "src": "img/favicon.png",
@@ -22,3 +22,4 @@
   "scope": "./",
   "lang": "en"
 }
+
