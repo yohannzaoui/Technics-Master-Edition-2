@@ -14,7 +14,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "./index.html",
+  "start_url": "https://hdsoundsystem.github.io/Technics-Master-Edition-2/",
   "display": "standalone",
   "theme_color": "#050505",
   "background_color": "#050505",
